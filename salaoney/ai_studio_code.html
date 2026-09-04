@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/jpg" href="image/neyblack_logo.jpg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Barbearia NeyBlack - Agendamento Online</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;750&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS Play CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            serif: ['Playfair Display', 'serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+            display: ['Space Grotesk', 'sans-serif'],
+          },
+          colors: {
+            gold: {
+              50: '#fefdf0',
+              100: '#fdf9d1',
+              200: '#faf0a2',
+              300: '#f5e068',
+              400: '#edca39',
+              500: '#d5b020',
+              600: '#a88215',
+              700: '#7e5b11',
+              800: '#553c0f',
+              900: '#2b1e06',
+              950: '#150f03',
+            },
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Alpine.js -->
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
+  <!-- Style Tweaks -->
+  <style>
+    [x-cloak] { display: none !important; }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #09090b;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1f1f23;
+      border-radius: 999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #edca39;
+    }
+  </style>
+</head>
+<body x-data="barberApp" x-cloak class="bg-zinc-950 text-zinc-100 selection:bg-gold-500 selection:text-zinc-950 font-sans relative overflow-x-hidden min-h-screen">
+
+  <!-- Ambient background glow -->
+  <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[400px] bg-gold-500/5 blur-[120px] rounded-full pointer-events-none z-0"></div>
+
+  <!-- Banner Notification for successful booking -->
+  <div 
+    x-show="showNotification" 
+    x-transition:enter="transition ease-out duration-300"
+    x-transition:enter-start="opacity-0 -translate-y-8"
+    x-transition:enter-end="opacity-100 translate-y-0"
+    x-transition:leave="transition ease-in duration-200"
+    x-transition:leave-start="opacity-100 translate-y-0"
+    x-transition:leave-end="opacity-0 -translate-y-8"
+    class="fixed top-24 left-4 right-4 md:left-1/4 md:right-1/4 mx-auto z-50 max-w-lg bg-zinc-900 border border-gold-400 text-gold-400 p-4 rounded-2xl shadow-2xl flex items-start gap-3.5"
+  >
+    <i data-lucide="sparkles" class="w-6 h-6 flex-shrink-0 text-gold-400 animate-pulse mt-0.5"></i>
+    <div>
+      <h4 class="font-bold text-white text-sm">Agendamento Solicitado!</h4>
+      <p class="text-zinc-400 text-xs mt-1 leading-relaxed">
+        Seu compromisso foi salvo e você foi conectado ao WhatsApp da Barbearia NeyBlack para consolidar a confirmação. Aguardamos você!
+      </p>
+    </div>
+  </div>
+
+  <!-- NAVIGATION BAR -->
+  <nav class="fixed top-0 inset-x-0 z-40 bg-zinc-950/80 backdrop-blur-md border-b border-zinc-900/60 transition-all">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-20">
+        
+        <!-- Logo -->
+        <div class="flex items-center gap-3.5 cursor-pointer" @click="scrollToSection('inicio')">
+          <div class="w-11 h-11 rounded-full overflow-hidden border border-zinc-800">
+            <img src="image/neyblack_logo.jpg" alt="Logo NeyBlack" class="w-full h-full object-cover" />
+          </div>
+          <div>
+            <span class="font-serif font-bold text-white text-lg tracking-wider block">NeyBlack</span>
+            <span class="text-[9px] tracking-[0.3em] font-mono text-gold-400 uppercase -mt-1 block">Barbearia</span>
+          </div>
+        </div>
+
+        <!-- Desktop navigation -->
+        <div class="hidden md:flex items-center gap-4 lg:gap-8">
+          <button @click="scrollToSection('inicio')" class="text-xs lg:text-sm font-medium tracking-wide text-zinc-300 hover:text-gold-400 transition-colors cursor-pointer">Início</button>
+          <button @click="scrollToSection('historia')" class="text-xs lg:text-sm font-medium tracking-wide text-zinc-300 hover:text-gold-400 transition-colors cursor-pointer">Diferenciais</button>
+          <button @click="scrollToSection('servicos')" class="text-xs lg:text-sm font-medium tracking-wide text-zinc-300 hover:text-gold-400 transition-colors cursor-pointer">Serviços</button>
+          <button @click="scrollToSection('avaliacoes')" class="text-xs lg:text-sm font-medium tracking-wide text-zinc-300 hover:text-gold-400 transition-colors cursor-pointer">Avaliações</button>
+          <button @click="scrollToSection('contato')" class="text-xs lg:text-sm font-medium tracking-wide text-zinc-300 hover:text-gold-400 transition-colors cursor-pointer">Contato</button>
+          
+          <button @click="openBooking()" class="flex items-center gap-1.5 lg:gap-2 bg-gradient-to-r from-gold-500 to-gold-400 hover:from-gold-600 hover:to-gold-500 text-zinc-950 font-bold px-4 lg:px-6 py-2 lg:py-2.5 rounded-full text-xs lg:text-sm shadow-lg shadow-gold-500/10 transition-all transform hover:-translate-y-0.5 active:translate-y-0">
+            <i data-lucide="calendar" class="w-4 h-4"></i>
+            <span>Agendar Agora</span>
+          </button>
+        </div>
+
+        <!-- Mobile hamburger -->
+        <div class="flex items-center md:hidden">
+          <button @click="isNavOpen = !isNavOpen" class="text-zinc-400 hover:text-white p-2">
+            <i data-lucide="menu" class="w-6 h-6" x-show="!isNavOpen"></i>
+            <i data-lucide="x" class="w-6 h-6" x-show="isNavOpen"></i>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Mobile Menu Overlay -->
+    <div x-show="isNavOpen" x-transition class="md:hidden bg-zinc-950 border-t border-zinc-900 px-4 py-6 space-y-4 shadow-2xl">
+      <button @click="scrollToSection('inicio')" class="block w-full text-left text-sm font-medium tracking-wide text-zinc-300 py-2">Início</button>
+      <button @click="scrollToSection('historia')" class="block w-full text-left text-sm font-medium tracking-wide text-zinc-300 py-2">Diferenciais</button>
+      <button @click="scrollToSection('servicos')" class="block w-full text-left text-sm font-medium tracking-wide text-zinc-300 py-2">Serviços</button>
+      <button @click="scrollToSection('avaliacoes')" class="block w-full text-left text-sm font-medium tracking-wide text-zinc-300 py-2">Avaliações</button>
+      <button @click="scrollToSection('contato')" class="block w-full text-left text-sm font-medium tracking-wide text-zinc-300 py-2">Contato</button>
+      <button @click="isNavOpen = false; openBooking()" class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-gold-500 to-gold-400 text-zinc-950 font-bold py-3 rounded-xl text-sm">
+        <i data-lucide="calendar" class="w-4 h-4"></i>
+        <span>Agendar Horário</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <section id="inicio" class="relative min-h-screen flex items-center pt-24 overflow-hidden bg-zinc-950">
+    <div class="absolute inset-0 z-0">
+      <img src="image/barbershop_hero.jpg" alt="Barbearia NeyBlack" class="w-full h-full object-cover object-center scale-105" />
+      <div class="absolute inset-0 bg-gradient-to-r from-zinc-950 via-zinc-950/85 to-transparent"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-zinc-950/40"></div>
+    </div>
+
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 w-full">
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 items-center">
+        
+        <!-- Left side client copywriting -->
+        <div class="md:col-span-7 lg:col-span-7 space-y-8">
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-900/90 border border-gold-500/20 text-xs text-gold-300 font-mono">
+            <i data-lucide="star" class="w-4 h-4 text-gold-400 fill-gold-400"></i>
+            <span>4.9 (51 Avaliações no Google Maps) • Aberto até 20:00</span>
+          </div>
+
+          <div class="space-y-4">
+            <h1 class="font-serif text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight text-white leading-tight">
+              Arte, Estilo e <br />
+              <span class="text-transparent bg-clip-text bg-gradient-to-r from-gold-300 via-gold-400 to-amber-500">
+                Alta Autoestima
+              </span>
+            </h1>
+            <p class="text-zinc-400 text-lg sm:text-xl max-w-xl leading-relaxed">
+              Referência em elevar o visual masculino em São Vicente. Um espaço moderno, acolhedor e focado na precisão de cada corte.
+            </p>
+          </div>
+
+          <!-- CTAs -->
+          <div class="flex flex-col sm:flex-row gap-4 pt-4">
+            <button @click="openBooking()" class="flex items-center justify-center gap-3 bg-gradient-to-r from-gold-400 via-gold-500 to-gold-600 hover:from-gold-500 hover:to-gold-700 text-zinc-950 font-extrabold text-base px-8 py-4 rounded-full shadow-xl shadow-gold-500/20 transition-all hover:scale-[1.02] active:scale-[0.98]">
+              <i data-lucide="calendar" class="w-5 h-5"></i>
+              <span>Agendar Horário Online</span>
+            </button>
+            <a href="https://wa.me/5513991552417?text=Olá!%20Gostaria%20de%20solicitar%20um%20atendimento%20na%20Barbearia%20NeyBlack." target="_blank" class="flex items-center justify-center gap-2.5 bg-[#25D366] hover:bg-[#1fae53] text-white font-extrabold text-base px-8 py-4 rounded-full transition-all shadow-xl shadow-emerald-500/10 hover:scale-[1.02] active:scale-[0.98]">
+              <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.513 2.262 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.457L0 24zm6.59-4.846c1.6.95 3.1 1.45 4.6 1.45 5.4 0 9.8-4.4 9.8-9.8a9.7 9.7 0 00-2.9-6.9 9.7 9.7 0 00-6.9-2.9c-5.4 0-9.8 4.4-9.8 9.8 0 1.9.5 3.7 1.4 5.3l-.9 3.4 3.7-.9zm11.5-6.1s-.4-.2-1.3-.7-1.1-.3-1.3-.1c-.1.2-.5.7-.6.9-.1.1-.3.2-.6.1s-1.2-.4-2.3-1.4c-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6s.3-.3.4-.5a1.2 1.2 0 00.3-.4c.1-.2 0-.4-.1-.5s-1.1-2.6-1.5-3.5c-.4-.9-.8-.8-1-.8h-.9c-.3 0-.8.1-1.2.6s-1.6 1.6-1.6 3.9 1.7 4.5 1.9 4.8c.2.3 3.3 5 8 7 1.1.5 2 .8 2.7 1 .9.3 1.8.3 2.5.2.8-.1 2.4-1 2.7-2 .3-1 .3-1.9.2-2.1-.1-.2-.4-.3-.8-.5z" />
+              </svg>
+              <span>Chamar no WhatsApp</span>
+            </a>
+          </div>
+
+          <!-- Quick trust indicators -->
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-6 pt-8 border-t border-zinc-900">
+            <div>
+              <p class="text-zinc-500 text-xs uppercase tracking-widest font-mono">Endereço</p>
+              <p class="text-zinc-300 text-xs font-medium mt-1">Parque Sao Vicente, SV</p>
+            </div>
+            <div>
+              <p class="text-zinc-500 text-xs uppercase tracking-widest font-mono">Contato Direto</p>
+              <a href="tel:13991552417" class="text-zinc-300 text-xs font-medium hover:text-gold-400 mt-1 block">(13) 99155-2417</a>
+            </div>
+            <div class="col-span-2 sm:col-span-1">
+              <p class="text-zinc-500 text-xs uppercase tracking-widest font-mono">Atendimento</p>
+              <p class="text-gold-400 text-xs font-semibold mt-1">Inclusivo e Acolhedor</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right side emblem logo -->
+        <div class="md:col-span-5 lg:col-span-5 flex justify-center">
+          <div class="relative group cursor-pointer" @click="openBooking()">
+            <div class="absolute -inset-1 rounded-full bg-gradient-to-r from-gold-500 to-amber-600 opacity-20 blur-xl group-hover:opacity-40 transition-opacity"></div>
+            <div class="relative w-72 h-72 sm:w-85 sm:h-85 rounded-full p-2 bg-zinc-950 border-2 border-zinc-800 group-hover:border-gold-400/50 transition-colors overflow-hidden">
+              <img src="image/neyblack_logo.jpg" alt="Logo NeyBlack" class="w-full h-full object-cover rounded-full" />
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- QUICK HIGHLIGHT STATS BAR -->
+  <div class="bg-zinc-900/60 py-8 border-y border-zinc-900 relative z-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center sm:text-left">
+        <div class="flex items-center justify-center sm:justify-start gap-4">
+          <div class="p-3 bg-zinc-950 rounded-xl border border-zinc-850">
+            <i data-lucide="star" class="w-5 h-5 text-gold-400 fill-gold-400"></i>
+          </div>
+          <div>
+            <h4 class="text-white font-bold font-serif text-sm">Avaliação 4.9</h4>
+            <p class="text-zinc-500 text-xs mt-0.5">Destaque absoluto no Google Maps</p>
+          </div>
+        </div>
+        <div class="flex items-center justify-center sm:justify-start gap-4">
+          <div class="p-3 bg-zinc-950 rounded-xl border border-zinc-850">
+            <i data-lucide="users" class="w-5 h-5 text-gold-400"></i>
+          </div>
+          <div>
+            <h4 class="text-white font-bold font-serif text-sm">Espaço Seguro & Clean</h4>
+            <p class="text-zinc-500 text-xs mt-0.5">Acolhendo todos com respeito</p>
+          </div>
+        </div>
+        <div class="flex items-center justify-center sm:justify-start gap-4">
+          <div class="p-3 bg-zinc-950 rounded-xl border border-zinc-850">
+            <i data-lucide="message-square" class="w-5 h-5 text-gold-400"></i>
+          </div>
+          <div>
+            <h4 class="text-white font-bold font-serif text-sm">Resposta Rápida</h4>
+            <p class="text-zinc-500 text-xs mt-0.5">Confirmações diretas no WhatsApp</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPONENT HIGHLIGHTS / DIFERENCIAIS SECTION -->
+  <section id="historia" class="py-20 bg-zinc-950 border-t border-zinc-900 relative z-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-2xl mx-auto mb-12">
+        <span class="text-xs uppercase tracking-[0.25em] text-gold-400 font-mono font-bold block mb-3">Diferenciais</span>
+        <h2 class="font-serif text-3xl sm:text-4xl font-bold tracking-tight text-white">Por que escolher a NeyBlack?</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+        <div class="bg-zinc-900/40 hover:bg-zinc-900/80 p-6 rounded-2xl border border-zinc-900 hover:border-zinc-800 transition-all flex flex-col justify-between">
+          <div class="space-y-4">
+            <div class="w-12 h-12 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center">
+              <i data-lucide="heart" class="w-6 h-6 text-gold-400"></i>
+            </div>
+            <div class="space-y-2">
+              <h3 class="text-white font-bold text-lg">Ambiente Inclusivo</h3>
+              <p class="text-zinc-400 text-sm leading-relaxed">Uma empresa acolhedora e segura para todos os membros da nossa comunidade.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-zinc-900/40 hover:bg-zinc-900/80 p-6 rounded-2xl border border-zinc-900 hover:border-zinc-800 transition-all flex flex-col justify-between">
+          <div class="space-y-4">
+            <div class="w-12 h-12 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center">
+              <i data-lucide="sparkles" class="w-6 h-6 text-gold-400"></i>
+            </div>
+            <div class="space-y-2">
+              <h3 class="text-white font-bold text-lg">Atendimento Impecável</h3>
+              <p class="text-zinc-400 text-sm leading-relaxed">Profissionais de excelência dedicados a entender seu estilo e elevar sua autoestima.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-6 bg-gradient-to-br from-zinc-900 to-zinc-950 rounded-2xl border border-gold-500/10 flex flex-col justify-center text-center space-y-4">
+          <div class="space-y-2">
+            <h4 class="text-gold-400 text-4xl font-serif font-bold">100%</h4>
+            <p class="text-zinc-300 text-xs font-semibold uppercase tracking-wider font-mono">Espaço Seguro & Inclusivo</p>
+            <p class="text-zinc-500 text-xs leading-relaxed">
+              Empresa orgulhosamente acolhedora de toda a comunidade LGBTQ+ e identificada no Google como liderada por empreendedoras independentes.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES LIST SECTION -->
+  <section id="servicos" class="py-24 bg-zinc-900/30 border-t border-zinc-900 relative z-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- List Title -->
+      <div class="text-center max-w-2xl mx-auto space-y-4 mb-16">
+        <span class="text-xs uppercase tracking-[0.25em] text-gold-400 font-mono font-bold block">Serviços & Preços</span>
+        <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white">Excelência em Cada Detalhe</h2>
+        <p class="text-zinc-400 text-sm sm:text-base leading-relaxed">
+          Consulte nossa tabela de preços e serviços pensados especificamente para a anatomia, estilo e bem-estar do homem moderno.
+        </p>
+      </div>
+
+      <!-- Tab filtering components -->
+      <div class="flex flex-wrap justify-center gap-2 mb-12">
+        <template x-for="cat in categories" :key="cat.val">
+          <button 
+            @click="activeCategory = cat.val"
+            :class="activeCategory === cat.val ? 'bg-gold-500 border-gold-500 text-zinc-950 font-bold shadow-lg shadow-gold-500/10' : 'bg-zinc-950 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-white'"
+            class="px-5 py-2.5 rounded-full text-xs sm:text-sm font-medium tracking-wide transition-all border cursor-pointer"
+            x-text="cat.name"
+          ></button>
+        </template>
+      </div>
+
+      <!-- Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+        <template x-for="srv in services" :key="srv.id">
+          <div 
+            x-show="activeCategory === 'todos' || srv.category === activeCategory"
+            @click="openBooking(srv.id)"
+            :class="isSelectedService(srv.id) ? 'bg-gold-400/5 border-gold-400 shadow-lg shadow-gold-400/5' : 'bg-zinc-950/80 border-zinc-900/80 hover:border-zinc-800'"
+            class="group p-6 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between h-full hover:-translate-y-0.5"
+          >
+            <div>
+              <div class="flex items-start justify-between gap-4 mb-3">
+                <h3 class="text-white font-bold text-base sm:text-lg group-hover:text-gold-400 transition-colors" x-text="srv.name"></h3>
+                <span class="text-gold-400 font-serif font-bold text-lg sm:text-xl whitespace-nowrap bg-gold-400/5 px-3 py-1 rounded-lg border border-gold-400/10" x-text="'R$ ' + srv.price.toFixed(2).replace('.', ',')"></span>
+              </div>
+              <p class="text-zinc-400 text-xs sm:text-sm leading-relaxed mb-6" x-text="srv.description"></p>
+            </div>
+
+            <div class="flex items-center justify-between pt-4 border-t border-zinc-900/60 mt-auto">
+              <div class="flex items-center gap-1.5 text-zinc-500 text-xs font-mono">
+                <i data-lucide="clock" class="w-3.5 h-3.5 text-gold-500/80"></i>
+                <span x-text="srv.durationMin + ' minutos'"></span>
+              </div>
+
+              <button 
+                @click.stop="openBooking(srv.id)"
+                :class="isSelectedService(srv.id) ? 'bg-gold-500 border-gold-500 text-zinc-950' : 'border-zinc-800 text-zinc-300 hover:border-gold-400/30 hover:text-gold-400'"
+                class="flex items-center gap-1.5 text-xs font-bold font-mono py-2 px-4 rounded-full border transition-all cursor-pointer"
+              >
+                <span x-text="isSelectedService(srv.id) ? 'Selecionado' : 'Agendar'"></span>
+                <i data-lucide="chevron-right" class="w-3.5 h-3.5" x-show="!isSelectedService(srv.id)"></i>
+                <i data-lucide="check" class="w-3.5 h-3.5 stroke-[3]" x-show="isSelectedService(srv.id)"></i>
+              </button>
+            </div>
+          </div>
+        </template>
+      </div>
+
+      <div class="mt-12 text-center">
+        <p class="text-zinc-500 text-xs font-mono">
+          *Todos os nossos cortes acompanham lavatório e finalização com pomada e sprays de alta fixação.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- REVIEWS SECTION -->
+  <section id="avaliacoes" class="py-24 bg-zinc-950 border-t border-zinc-900 relative z-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- Reviews Header -->
+      <div class="flex flex-col md:flex-row items-start md:items-end justify-between gap-6 mb-16">
+        <div class="space-y-3 max-w-2xl">
+          <span class="text-xs uppercase tracking-[0.25em] text-gold-400 font-mono font-bold block">Quem Conhece Recomenda</span>
+          <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white">
+            Histórias de Quem Vive a <br />Experiência NeyBlack
+          </h2>
+        </div>
+
+        <div class="flex items-center gap-4 bg-zinc-900/60 border border-zinc-800 p-4 rounded-2xl">
+          <div class="text-center">
+            <span class="text-white text-3xl font-serif font-bold font-display">4.9</span>
+            <p class="text-[10px] text-zinc-500 font-mono tracking-wider uppercase mt-1">Classificação</p>
+          </div>
+          <div class="h-10 w-px bg-zinc-800"></div>
+          <div>
+            <div class="flex items-center gap-0.5 text-gold-400">
+              <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+              <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+              <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+              <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+              <i data-lucide="star" class="w-4 h-4 fill-current"></i>
+            </div>
+            <p class="text-xs text-zinc-400 mt-1.5">Baseado em 51 avaliações reais</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reviews Columns Layout -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <!-- Review 1 -->
+        <div class="bg-zinc-900/40 border border-zinc-900 hover:border-zinc-800 p-6 rounded-2xl flex flex-col justify-between space-y-4 hover:-translate-y-0.5 transition-all">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <div class="flex gap-0.5 text-gold-400">
+                <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>
+                <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>
+                <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>
+                <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>
+                <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>
+              </div>
+              <i data-lucide="quote" class="w-5 h-5 text-zinc-800"></i>
+            </div>
+            <p class="text-zinc-300 text-xs sm:text-sm leading-relaxed italic">
+              "Experiência sensacional na Barbearia Ney Black! O atendimento é impecável e a equipe realmente entende de cortes e estilo. O ambiente é super agradável e moderno, com música boa e um atendimento que faz você se sentir em casa."
+            </p>
+          </div>
+          <div class="flex items-center gap-3 pt-4 border-t border-zinc-900/80">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-gold-500/10 to-amber-500/10 border border-gold-500/20 flex items-center justify-center font-bold text-xs text-gold-300">JS</div>
+            <div>
+              <h4 class="text-white text-sm font-semibold">Joao de Souza</h4>
+              <p class="text-[10px] text-zinc-500 font-mono mt-0.5">um ano atrás • Google Maps</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Review 3 -->
+        <div class="bg-zinc-900/40 border border-zinc-900 hover:border-zinc-800 p-6 rounded-2xl flex flex-col justify-between space-y-4 hover:-translate-y-0.5 transition-all">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <div class="flex gap-0.5 text-gold-400">
+                <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>
+                <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>
+                <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>
+                <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>
+                <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>
+              </div>
+              <i data-lucide="quote" class="w-5 h-5 text-zinc-800"></i>
+            </div>
+            <p class="text-zinc-300 text-xs sm:text-sm leading-relaxed italic">
+              "Lugar muito bom, ótimos profissionais e com ótimo atendimento diferenciado. O melhor estabelecimento da região sem sombra de dúvidas!"
+            </p>
+          </div>
+          <div class="flex items-center gap-3 pt-4 border-t border-zinc-900/80">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-gold-500/10 to-amber-500/10 border border-gold-500/20 flex items-center justify-center font-bold text-xs text-gold-300">PR</div>
+            <div>
+              <h4 class="text-white text-sm font-semibold">Paulo Ricardo Ribeiro</h4>
+              <p class="text-[10px] text-zinc-500 font-mono mt-0.5">4 anos atrás • Google Maps</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="mt-12 text-center">
+        <p class="text-zinc-500 text-xs font-mono flex items-center justify-center gap-1.5">
+          <i data-lucide="heart" class="w-3.5 h-3.5 text-gold-500/60"></i>
+          <span>Avaliações auditadas e importadas diretamente de nossa listagem comercial oficial.</span>
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FOOTER & CONTACT LOCATION BLOCK -->
+  <footer id="contato" class="bg-zinc-950 border-t border-zinc-900 pt-20 pb-10 relative z-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-12 pb-16 border-b border-zinc-900 items-start">
+        
+        <!-- Left Footer Info Column -->
+        <div class="md:col-span-5 space-y-6">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full overflow-hidden border border-zinc-800">
+              <img src="image/neyblack_logo.jpg" alt="Logo NeyBlack" class="w-full h-full object-cover" />
+            </div>
+            <span class="font-serif font-bold text-white text-lg tracking-wider">NeyBlack</span>
+          </div>
+          <p class="text-zinc-400 text-sm leading-relaxed max-w-sm">
+            Unindo cortes de altíssima precisão com um atendimento humano, integrando resenha, bem-estar e diversidade.
+          </p>
+          <div class="space-y-3 font-medium text-xs text-zinc-300 font-mono">
+            <p class="flex items-center gap-2.5">
+              <i data-lucide="map-pin" class="w-4 h-4 text-gold-400"></i>
+              <span>Parque São Vicente, São Vicente - SP</span>
+            </p>
+            <p class="flex items-center gap-2.5">
+              <i data-lucide="phone" class="w-4 h-4 text-gold-400"></i>
+              <a href="tel:13991552417" class="hover:text-gold-400 transition-colors">(13) 99155-2417</a>
+            </p>
+          </div>
+        </div>
+
+        <!-- Middle Column Maps & Routing -->
+        <div class="md:col-span-7 space-y-6">
+          <h3 class="text-white font-bold text-sm tracking-widest font-mono uppercase">Visite Nosso Salão</h3>
+          <div class="w-full h-56 rounded-2xl overflow-hidden border border-zinc-900 group relative">
+            <iframe 
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3644.2045550269096!2d-46.398606824905285!3d-23.988514981665403!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94ce1bcfb4c424d5%3A0x679619dbbf1660ee!2sR.%20Lourival%20Moreira%20do%20Amaral%20-%20Parque%20Sao%20Vicente%2C%20S%C3%A3o%20Vicente%20-%20SP%2C%2011390-330!5e0!3m2!1spt-BR!2sbr!4v1714400000000!5m2!1spt-BR!2sbr" 
+              class="w-full h-full grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300" 
+              style="border:0;" 
+              allowfullscreen="" 
+              loading="lazy" 
+              referrerpolicy="no-referrer-when-downgrade"
+            ></iframe>
+          </div>
+
+          <div class="flex flex-wrap gap-3">
+            <a href="https://maps.google.com/?q=R.+Lourival+Moreira+do+Amaral,+592+-+Parque+Sao+Vicente,+S%C3%A3o+Vicente+-+SP" target="_blank" class="flex items-center gap-2 bg-zinc-900 hover:bg-zinc-800 text-white font-bold text-xs py-2 px-4 rounded-full border border-zinc-800 transition-all font-mono cursor-pointer">
+              <i data-lucide="navigation" class="w-3.5 h-3.5 text-gold-400"></i>
+              <span>Rotas no Maps</span>
+            </a>
+            <button @click="copyAddress()" class="flex items-center gap-2 bg-zinc-900 hover:bg-zinc-800 text-white font-bold text-xs py-2 px-4 rounded-full border border-zinc-800 transition-all font-mono cursor-pointer">
+              <i data-lucide="copy" class="w-3.5 h-3.5 text-gold-400"></i>
+              <span>Copiar Endereço</span>
+            </button>
+            <a href="https://www.instagram.com/barbearianeyblack?igshid=1k01jj9a2gzjg" target="_blank" class="flex items-center gap-2 bg-zinc-900 hover:bg-zinc-800 text-white font-bold text-xs py-2 px-4 rounded-full border border-zinc-800 transition-all font-mono cursor-pointer">
+              <i data-lucide="instagram" class="w-3.5 h-3.5 text-gold-400"></i>
+              <span>Instagram</span>
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 text-[11px] text-zinc-600 font-mono">
+        <p>© 2026 Barbearia NeyBlack. Todos os direitos reservados.</p>
+        <div class="flex gap-4">
+          <button @click="scrollToSection('inicio')" class="hover:text-zinc-400 transition-colors">Voltar ao topo</button>
+          <span>•</span>
+          <p>Mãos de Ouro e Conexão em São Vicente</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- FLOATING CTA BLOCK (WhatsApp Always & Scheduling Mobile-Only) -->
+  <div class="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3 font-sans">
+    <!-- Mobile Booking CTA (Only on screens below md) -->
+    <div x-show="!isBookingOpen" class="md:hidden">
+      <button @click="openBooking()" class="bg-gold-400 hover:bg-gold-500 text-zinc-950 font-bold px-5 py-3.5 rounded-full shadow-2xl flex items-center gap-2 border border-gold-300 transform scale-100 hover:scale-105 active:scale-95 transition-all">
+        <i data-lucide="calendar" class="w-5 h-5"></i>
+        <span class="text-xs font-mono font-bold">AGENDAR</span>
+      </button>
+    </div>
+
+    <!-- WhatsApp Chat Floating Button (Always Visible) -->
+    <a 
+      href="https://wa.me/5513991552417?text=Olá%20NeyBlack!%20Gostaria%20de%20tirar%20uma%20dúvida%20ou%20agendar%20um%20horário." 
+      target="_blank" 
+      class="group relative flex items-center justify-center w-14 h-14 bg-[#25D366] hover:bg-[#1fae53] text-white rounded-full shadow-2xl shadow-emerald-500/20 border border-emerald-500/10 hover:scale-110 active:scale-95 transition-all"
+      title="Fale Conosco no WhatsApp"
+    >
+      <!-- Pulse radar effect -->
+      <span class="absolute inset-0 rounded-full bg-[#25D366]/40 -z-10 animate-ping opacity-75"></span>
+      
+      <!-- Hover Tooltip (Desktop-only) -->
+      <span class="absolute right-full mr-3 bg-zinc-950/95 text-zinc-100 text-xs py-2 px-3.5 rounded-xl border border-zinc-900 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none font-medium flex items-center gap-2 shadow-2xl">
+        <span class="w-1.5 h-1.5 rounded-full bg-[#10b981] animate-pulse"></span>
+        Fale Conosco via WhatsApp
+      </span>
+
+      <!-- Custom robust SVG WhatsApp symbol -->
+      <svg class="w-7 h-7 fill-current" viewBox="0 0 24 24">
+        <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.513 2.262 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.457L0 24zm6.59-4.846c1.6.95 3.1 1.45 4.6 1.45 5.4 0 9.8-4.4 9.8-9.8a9.7 9.7 0 00-2.9-6.9 9.7 9.7 0 00-6.9-2.9c-5.4 0-9.8 4.4-9.8 9.8 0 1.9.5 3.7 1.4 5.3l-.9 3.4 3.7-.9zm11.5-6.1s-.4-.2-1.3-.7-1.1-.3-1.3-.1c-.1.2-.5.7-.6.9-.1.1-.3.2-.6.1s-1.2-.4-2.3-1.4c-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6s.3-.3.4-.5a1.2 1.2 0 00.3-.4c.1-.2 0-.4-.1-.5s-1.1-2.6-1.5-3.5c-.4-.9-.8-.8-1-.8h-.9c-.3 0-.8.1-1.2.6s-1.6 1.6-1.6 3.9 1.7 4.5 1.9 4.8c.2.3 3.3 5 8 7 1.1.5 2 .8 2.7 1 .9.3 1.8.3 2.5.2.8-.1 2.4-1 2.7-2 .3-1 .3-1.9.2-2.1-.1-.2-.4-.3-.8-.5z" />
+      </svg>
+    </a>
+  </div>
+
+  <!-- BOOKING WIZARD MODAL DIALOG OVERLAY -->
+  <div 
+    x-show="isBookingOpen" 
+    class="fixed inset-0 z-50 overflow-y-auto bg-zinc-950/70 backdrop-blur-md flex items-center justify-center p-4"
+    style="display: none;"
+  >
+    <div 
+      @click.away="isBookingOpen = false" 
+      class="bg-zinc-950 border border-zinc-900 rounded-3xl w-full max-w-4xl shadow-2xl overflow-hidden flex flex-col lg:grid lg:grid-cols-12 min-h-[500px]"
+    >
+      
+      <!-- Left side summary details column -->
+      <div class="bg-zinc-900 p-6 md:p-8 lg:col-span-4 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-zinc-950">
+        <div class="space-y-6">
+          <div>
+            <span class="text-[10px] tracking-widest font-mono text-gold-400 uppercase">Agendamento</span>
+            <h3 class="text-white font-serif text-2xl font-bold mt-1">Seu Visual</h3>
+          </div>
+
+          <div class="space-y-4">
+            <!-- Services list confirmation -->
+            <div class="space-y-2">
+              <p class="text-zinc-500 text-[10px] uppercase font-mono tracking-wider">Serviços Selecionados</p>
+              <div class="space-y-1">
+                <template x-for="s in selectedServices" :key="s.id">
+                  <div class="text-zinc-200 text-xs font-semibold flex justify-between gap-2">
+                    <span x-text="'• ' + s.name"></span>
+                    <span class="text-gold-400 font-mono" x-text="'R$ ' + s.price"></span>
+                  </div>
+                </template>
+                <div x-show="selectedServices.length === 0" class="text-zinc-500 text-xs">Nenhum serviço selecionado</div>
+              </div>
+            </div>
+
+            <!-- Barber Confirmation -->
+            <div x-show="selectedBarberId" class="pt-3 border-t border-zinc-950 space-y-1">
+              <p class="text-zinc-500 text-[10px] uppercase font-mono tracking-wider">Profissional</p>
+              <p class="text-zinc-200 text-xs font-semibold" x-text="activeBarber ? activeBarber.name : ''"></p>
+            </div>
+
+            <!-- Date Choice Confirmation -->
+            <div x-show="selectedDate && selectedTime" class="pt-3 border-t border-zinc-950 space-y-1">
+              <p class="text-zinc-500 text-[10px] uppercase font-mono tracking-wider">Data & Horário</p>
+              <p class="text-zinc-200 text-xs font-semibold">
+                <span x-text="selectedDate ? selectedDate.split('-').reverse().join('/') : ''"></span> • <span x-text="selectedTime"></span>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Totals panel in summary -->
+        <div x-show="selectedServices.length > 0" class="pt-6 border-t border-zinc-950 space-y-2 mt-8 lg:mt-0">
+          <div class="flex justify-between items-end">
+            <span class="text-zinc-500 text-xs font-mono">DURAÇÃO TOTAL:</span>
+            <span class="text-zinc-300 text-xs font-mono font-semibold" x-text="totalDuration + ' minutos'"></span>
+          </div>
+          <div class="flex justify-between items-end">
+            <span class="text-zinc-500 text-xs font-mono">VALOR ESTIMADO:</span>
+            <span class="text-gold-400 font-serif text-xl sm:text-2xl font-bold" x-text="'R$ ' + totalCost.toFixed(2).replace('.', ',')"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right side flow step panel -->
+      <div class="p-6 md:p-8 lg:col-span-8 flex flex-col justify-between">
+        
+        <!-- Header status layout -->
+        <div class="flex justify-between items-center mb-6">
+          <div class="flex items-center gap-1">
+            <template x-for="sNum in [1, 2, 3, 4, 5]" :key="sNum">
+              <div :class="step >= sNum ? 'w-6 bg-gold-400' : 'w-2 bg-zinc-800'" class="h-1.5 rounded-full transition-all"></div>
+            </template>
+          </div>
+          <button @click="isBookingOpen = false" class="text-zinc-500 hover:text-white text-xs font-bold font-mono py-1.5 px-3 border border-zinc-900 rounded-full cursor-pointer hover:bg-zinc-900">
+            Cancelar
+          </button>
+        </div>
+
+        <!-- Active panel contents -->
+        <div class="flex-grow">
+          
+          <!-- STEP 1: SERVICES SELECTOR -->
+          <div x-show="step === 1" class="space-y-4">
+            <div class="space-y-1">
+              <h4 class="text-white text-xl font-bold font-serif">Escolha os Serviços</h4>
+              <p class="text-zinc-400 text-xs">Você pode selecionar múltiplos serviços para o seu agendamento.</p>
+            </div>
+
+            <div class="max-h-[300px] overflow-y-auto pr-1 space-y-2 mt-4">
+              <template x-for="srv in services" :key="srv.id">
+                <div 
+                  @click="toggleServiceSelect(srv)"
+                  :class="isSelectedService(srv.id) ? 'bg-gold-500/10 border-gold-400' : 'bg-zinc-900/40 border-zinc-900 hover:border-zinc-800'"
+                  class="p-4 rounded-xl border transition-all cursor-pointer flex justify-between items-center"
+                >
+                  <div class="space-y-1">
+                    <h5 class="text-white text-sm font-bold" x-text="srv.name"></h5>
+                    <span class="text-[10px] text-zinc-500 font-mono tracking-wider" x-text="'⏱️ ' + srv.durationMin + ' minutos'"></span>
+                  </div>
+                  <span class="text-gold-400 font-serif text-sm font-semibold" x-text="'R$ ' + srv.price.toFixed(2).replace('.', ',')"></span>
+                </div>
+              </template>
+            </div>
+          </div>
+
+          <!-- STEP 2: PROFESSIONAL CHANGER -->
+          <div x-show="step === 2" class="space-y-4">
+            <div class="space-y-1">
+              <h4 class="text-white text-xl font-bold font-serif">Escolha o Profissional</h4>
+              <p class="text-zinc-400 text-xs">Selecione o barbeiro de sua preferência para realizar o atendimento.</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+              <template x-for="b in barbers" :key="b.id">
+                <div 
+                  @click="selectedBarberId = b.id"
+                  :class="selectedBarberId === b.id ? 'bg-gold-500/10 border-gold-400' : 'bg-zinc-900/40 border-zinc-900 hover:border-zinc-800'"
+                  class="p-4 rounded-2xl border transition-all cursor-pointer text-center space-y-3"
+                >
+                  <div class="w-14 h-14 rounded-full overflow-hidden mx-auto border border-zinc-800">
+                    <img :src="b.avatar" :alt="b.name" class="w-full h-full object-cover" />
+                  </div>
+                  <div>
+                    <h5 class="text-white text-sm font-bold" x-text="b.name"></h5>
+                    <p class="text-zinc-500 text-[10px]" x-text="b.role"></p>
+                  </div>
+                </div>
+              </template>
+            </div>
+          </div>
+
+          <!-- STEP 3: DATE & TIME CONFIG -->
+          <div x-show="step === 3" class="space-y-6">
+            <div class="space-y-1">
+              <h4 class="text-white text-xl font-bold font-serif">Selecione o Dia & Hora</h4>
+              <p class="text-zinc-400 text-xs">Os domingos estão desativados e os horários já tomados marcam ocupado.</p>
+            </div>
+
+            <!-- Dates horizontal slider -->
+            <div class="space-y-2">
+              <p class="text-zinc-500 text-[10px] uppercase font-mono tracking-wide">Dias Disponíveis</p>
+              <div class="flex gap-2 overflow-x-auto pb-2">
+                <template x-for="day in getNextDays()" :key="day.formattedValue">
+                  <button 
+                    :disabled="day.isClosed"
+                    @click="selectedDate = day.formattedValue; selectedTime = ''"
+                    :class="day.isClosed ? 'bg-zinc-950/20 border-zinc-900 text-zinc-700 opacity-40 cursor-default' : (selectedDate === day.formattedValue ? 'bg-gold-400 border-gold-400 text-zinc-950 font-bold' : 'bg-zinc-900/40 border-zinc-900 text-zinc-300 hover:border-zinc-800')"
+                    class="flex flex-col items-center justify-center min-w-[55px] p-2.5 rounded-xl border transition-all cursor-pointer"
+                  >
+                    <span class="text-[10px] uppercase tracking-wider font-mono" x-text="day.weekdayName"></span>
+                    <span class="text-base font-bold my-0.5" x-text="day.dayOfMonth"></span>
+                    <span class="text-[9px] uppercase" x-text="day.monthLabel"></span>
+                  </button>
+                </template>
+              </div>
+            </div>
+
+            <!-- Time Grid slots -->
+            <div class="space-y-2" x-show="selectedDate">
+              <p class="text-zinc-500 text-[10px] uppercase font-mono tracking-wide">Horários Disponíveis</p>
+              <div class="grid grid-cols-4 sm:grid-cols-6 gap-2 max-h-[160px] overflow-y-auto pr-1">
+                <template x-for="time in getTimeSlots()" :key="time">
+                  <button 
+                    :disabled="isTimeSlotBooked(time)"
+                    @click="selectedTime = time"
+                    :class="isTimeSlotBooked(time) ? 'bg-zinc-900/10 border-zinc-950 text-zinc-700 cursor-not-allowed line-through' : (selectedTime === time ? 'bg-gold-400 border-gold-400 text-zinc-950' : 'bg-zinc-900/40 border-zinc-900 text-zinc-300 hover:border-zinc-800')"
+                    class="py-2 rounded-lg text-xs font-mono font-semibold border transition-all cursor-pointer"
+                    x-text="time"
+                  ></button>
+                </template>
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 4: PERSONAL CUSTOMER FORM -->
+          <div x-show="step === 4" class="space-y-4">
+            <div class="space-y-1">
+              <h4 class="text-white text-xl font-bold font-serif">Suas Informações</h4>
+              <p class="text-zinc-400 text-xs">Dados necessários para identificarmos seu agendamento no salão.</p>
+            </div>
+
+            <div class="space-y-4 pt-4">
+              <div class="space-y-1.5">
+                <label class="text-zinc-400 text-xs font-mono uppercase tracking-wider block">Seu Nome Completo</label>
+                <input 
+                  type="text" 
+                  x-model="clientName" 
+                  placeholder="Ex: Carlos Silva" 
+                  class="w-full bg-zinc-900/60 border border-zinc-800 text-white rounded-xl py-3 px-4 focus:border-gold-400 focus:outline-none text-sm transition-all" 
+                />
+              </div>
+
+              <div class="space-y-1.5">
+                <label class="text-zinc-400 text-xs font-mono uppercase tracking-wider block">WhatsApp / Celular com DDD</label>
+                <input 
+                  type="tel" 
+                  :value="clientPhone" 
+                  @input="handlePhoneChange($event.target.value)" 
+                  placeholder="Ex: (13) 99123-4567" 
+                  class="w-full bg-zinc-900/60 border border-zinc-800 text-white rounded-xl py-3 px-4 focus:border-gold-400 focus:outline-none text-sm transition-all font-mono" 
+                />
+              </div>
+
+              <div class="space-y-1.5">
+                <label class="text-zinc-400 text-xs font-mono uppercase tracking-wider block">Observações (Opcional)</label>
+                <textarea 
+                  x-model="clientNotes" 
+                  placeholder="Ex: Quero corte bem baixo, com risquinho..." 
+                  rows="2" 
+                  class="w-full bg-zinc-900/60 border border-zinc-800 text-white rounded-xl py-3 px-4 focus:border-gold-400 focus:outline-none text-sm transition-all resize-none"
+                ></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 5: SUMMARY SUBMISSION -->
+          <div x-show="step === 5" class="space-y-6">
+            <div class="text-center space-y-2 py-4">
+              <i data-lucide="check-circle" class="w-12 h-12 text-gold-400 mx-auto" stroke-width="1.5"></i>
+              <h4 class="text-white text-xl font-bold font-serif">Quase Pronto!</h4>
+              <p class="text-zinc-400 text-xs max-w-sm mx-auto">
+                Clique no botão para registrar o agendamento no salão e enviar os dados para confirmação no WhatsApp.
+              </p>
+            </div>
+
+            <div x-show="submitError" class="flex items-center gap-2 bg-red-950/40 border border-red-500/20 text-red-300 p-3 rounded-xl text-xs">
+              <i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0"></i>
+              <span x-text="submitError"></span>
+            </div>
+
+            <!-- Confirmation list -->
+            <div class="bg-zinc-900/40 rounded-xl p-4 border border-zinc-900 text-xs space-y-2 text-zinc-300">
+              <div class="flex justify-between border-b border-zinc-950 pb-2">
+                <span class="font-mono text-zinc-500 font-bold">CLIENTE:</span>
+                <span class="font-semibold text-white" x-text="clientName"></span>
+              </div>
+              <div class="flex justify-between border-b border-zinc-950 pb-2">
+                <span class="font-mono text-zinc-500 font-bold">DIAS / HORA:</span>
+                <span class="font-semibold text-white">
+                  <span x-text="selectedDate ? selectedDate.split('-').reverse().join('/') : ''"></span> às <span x-text="selectedTime"></span>
+                </span>
+              </div>
+              <div class="flex justify-between border-b border-zinc-950 pb-2">
+                <span class="font-mono text-zinc-500 font-bold">PROFISSIONAL:</span>
+                <span class="font-semibold text-gold-400" x-text="activeBarber ? activeBarber.name : ''"></span>
+              </div>
+              <div class="flex justify-between pt-1">
+                <span class="font-mono text-zinc-500 font-bold">DURAÇÃO ESTIMADA:</span>
+                <span class="font-semibold text-zinc-200" x-text="totalDuration + ' min'"></span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Wizard Nav Controls -->
+        <div class="flex justify-between items-center pt-8 border-t border-zinc-900 mt-8">
+          <div>
+            <button 
+              x-show="step > 1"
+              :disabled="isSubmitting"
+              @click="step--"
+              class="flex items-center gap-1.5 text-zinc-400 hover:text-white transition-all text-xs font-bold font-mono px-4 py-2 border border-zinc-900 rounded-full cursor-pointer hover:bg-zinc-900 disabled:opacity-40"
+            >
+              <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+              <span>Voltar</span>
+            </button>
+          </div>
+
+          <div>
+            <button 
+              x-show="step < 5"
+              @click="step++"
+              :disabled="(step === 1 && selectedServices.length === 0) || (step === 2 && !selectedBarberId) || (step === 3 && (!selectedDate || !selectedTime)) || (step === 4 && (!clientName || clientPhone.length < 10))"
+              class="flex items-center gap-1.5 bg-zinc-100 hover:bg-white text-zinc-950 font-bold px-6 py-2.5 rounded-full text-xs font-mono transition-all transform hover:-translate-y-0.5 disabled:opacity-35 cursor-pointer"
+            >
+              <span>Prosseguir</span>
+              <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+            </button>
+
+            <button 
+              x-show="step === 5"
+              @click="submitBooking()"
+              :disabled="isSubmitting"
+              class="flex items-center gap-2 bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-500 hover:to-gold-600 text-zinc-950 font-extrabold px-8 py-3.5 rounded-full text-sm shadow-lg shadow-gold-500/10 transition-all transform hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 cursor-pointer"
+            >
+              <span x-show="isSubmitting">Registrando...</span>
+              <span x-show="!isSubmitting" class="flex items-center gap-1.5">
+                <i data-lucide="send" class="w-4 h-4 fill-zinc-950"></i>
+                <span>Confirmar no WhatsApp</span>
+              </span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('alpine:init', () => {
+      Alpine.data('barberApp', () => ({
+        isBookingOpen: false,
+        showNotification: false,
+        activeCategory: 'todos',
+        isNavOpen: false,
+
+        // Predefined data sets
+        services: [
+          {
+            id: 'corte-classico',
+            name: 'Corte Masculino (Clássico / Social)',
+            price: 40,
+            durationMin: 30,
+            description: 'Corte tradicional feito na tesoura e máquina, lavado e finalizado com pomada.',
+            category: 'corte'
+          },
+          {
+            id: 'corte-degrade',
+            name: 'Corte Degradê (Fade Moderno)',
+            price: 45,
+            durationMin: 40,
+            description: 'Fade graduado de alta precisão (Low, Mid ou High Fade), finalizado com lavagem.',
+            category: 'corte'
+          },
+          {
+            id: 'barba-premium',
+            name: 'Barba Premium (Toalha Quente)',
+            price: 35,
+            durationMin: 30,
+            description: 'Barba desenhada com máquina e navalha, uso de espumas premium, toalha quente e pós-barba hidratante.',
+            category: 'barba'
+          },
+          {
+            id: 'combo-black',
+            name: 'Combo NeyBlack (Corte + Barba)',
+            price: 70,
+            durationMin: 60,
+            description: 'Nossa melhor experiência: Corte degradê ou clássico + Barba premium com toalha quente e finalização completa.',
+            category: 'combo'
+          },
+          {
+            id: 'pigmentacao',
+            name: 'Pigmentação de Cabelo/Barba',
+            price: 25,
+            durationMin: 20,
+            description: 'Discaracterização de fios brancos ou correção de falhas com tintura de alta qualidade.',
+            category: 'outros'
+          },
+          {
+            id: 'platinado',
+            name: 'Platinado Completo (Nevou)',
+            price: 90,
+            durationMin: 90,
+            description: 'Descoloração dupla segura acompanhada de hidratação intensa para o tom platinado perfeito.',
+            category: 'outros'
+          },
+          {
+            id: 'sobrancelha',
+            name: 'Sobrancelha na Navalha',
+            price: 15,
+            durationMin: 15,
+            description: 'Design e limpeza completa das sobrancelhas feito com lâmina descartável.',
+            category: 'outros'
+          }
+        ],
+
+        barbers: [
+          {
+            id: 'ney-black',
+            name: 'Ney Black',
+            role: 'Barbeiro Proprietário & Hairdresser',
+            avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop',
+          },
+          {
+            id: 'thiago-silva',
+            name: 'Thiago Silva',
+            role: 'Barbeiro Sênior',
+            avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop',
+          },
+          {
+            id: 'lucas-lima',
+            name: 'Lucas Lima',
+            role: 'Barbeiro Sênior',
+            avatar: 'https://images.unsplash.com/photo-1620122303020-43ec4b6cf7f8?q=80&w=200&auto=format&fit=crop',
+          }
+        ],
+
+        categories: [
+          { name: 'Todos os Serviços', val: 'todos' },
+          { name: 'Cortes', val: 'corte' },
+          { name: 'Barboterapia', val: 'barba' },
+          { name: 'Combos Especiais', val: 'combo' },
+          { name: 'Outros', val: 'outros' },
+        ],
+
+        // Input flow states
+        step: 1,
+        selectedServices: [],
+        selectedBarberId: '',
+        selectedDate: '',
+        selectedTime: '',
+        clientName: '',
+        clientPhone: '',
+        clientNotes: '',
+        isSubmitting: false,
+        submitError: '',
+        existingBookings: [],
+
+        async init() {
+          try {
+            const res = await fetch('/api/appointments');
+            if (res.ok) {
+              this.existingBookings = await res.json();
+            }
+          } catch (e) {
+            console.error('Error fetching appointments slots on server:', e);
+          }
+          // Lucide load
+          setTimeout(() => {
+            if (window.lucide) {
+              window.lucide.createIcons();
+            }
+          }, 300);
+        },
+
+        openBooking(serviceId = '') {
+          this.step = 1;
+          this.selectedServices = [];
+          this.selectedBarberId = '';
+          this.selectedDate = '';
+          this.selectedTime = '';
+          this.clientName = '';
+          this.clientPhone = '';
+          this.clientNotes = '';
+          this.submitError = '';
+          this.isSubmitting = false;
+
+          if (serviceId) {
+            const srv = this.services.find(s => s.id === serviceId);
+            if (srv) {
+              this.selectedServices.push(srv);
+            }
+          }
+          this.isBookingOpen = true;
+          // trigger lucide refresh
+          setTimeout(() => { if (window.lucide) window.lucide.createIcons(); }, 10);
+        },
+
+        toggleServiceSelect(service) {
+          const idx = this.selectedServices.findIndex(s => s.id === service.id);
+          if (idx > -1) {
+            this.selectedServices.splice(idx, 1);
+          } else {
+            this.selectedServices.push(service);
+          }
+        },
+
+        isSelectedService(serviceId) {
+          return this.selectedServices.some(s => s.id === serviceId);
+        },
+
+        get totalCost() {
+          return this.selectedServices.reduce((sum, s) => sum + s.price, 0);
+        },
+
+        get totalDuration() {
+          return this.selectedServices.reduce((sum, s) => sum + s.durationMin, 0);
+        },
+
+        get activeBarber() {
+          return this.barbers.find(b => b.id === this.selectedBarberId);
+        },
+
+        getNextDays() {
+          const list = [];
+          const date = new Date();
+          const weekdays = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+          const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+          
+          for (let i = 0; i < 14; i++) {
+            const nextDate = new Date();
+            nextDate.setDate(date.getDate() + i);
+            
+            const yyyy = nextDate.getFullYear();
+            const mm = String(nextDate.getMonth() + 1).padStart(2, '0');
+            const dd = String(nextDate.getDate()).padStart(2, '0');
+            const formattedDate = `${yyyy}-${mm}-${dd}`;
+            
+            list.push({
+              formattedValue: formattedDate,
+              dayOfMonth: nextDate.getDate(),
+              monthLabel: months[nextDate.getMonth()],
+              weekdayName: weekdays[nextDate.getDay()],
+              isClosed: nextDate.getDay() === 0,
+            });
+          }
+          return list;
+        },
+
+        getTimeSlots() {
+          return [
+            '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
+            '12:00', '12:30', '13:00', '13:30', '14:00', '14:30',
+            '15:00', '15:30', '16:00', '16:30', '17:00', '17:30',
+            '18:00', '18:30', '19:00', '19:30'
+          ];
+        },
+
+        isTimeSlotBooked(time) {
+          if (!this.selectedDate || !this.selectedBarberId) return false;
+          return this.existingBookings.some(
+            apt => apt.date === this.selectedDate && apt.time === time && apt.barberId === this.selectedBarberId && apt.status !== 'cancelled'
+          );
+        },
+
+        handlePhoneChange(val) {
+          const cleanNumbers = val.replace(/\D/g, '');
+          let formatted = cleanNumbers;
+          if (cleanNumbers.length > 2) {
+            formatted = `(${cleanNumbers.slice(0, 2)}) ${cleanNumbers.slice(2)}`;
+          }
+          if (cleanNumbers.length > 7) {
+            formatted = `(${cleanNumbers.slice(0, 2)}) ${cleanNumbers.slice(2, 7)}-${cleanNumbers.slice(7, 11)}`;
+          }
+          this.clientPhone = formatted;
+        },
+
+        async submitBooking() {
+          this.isSubmitting = true;
+          this.submitError = '';
+
+          const payload = {
+            customerName: this.clientName,
+            customerPhone: this.clientPhone,
+            serviceIds: this.selectedServices.map(s => s.id),
+            barberId: this.selectedBarberId,
+            date: this.selectedDate,
+            time: this.selectedTime,
+            notes: this.clientNotes,
+          };
+
+          try {
+            const res = await fetch('/api/appointments', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload),
+            });
+
+            if (!res.ok) {
+              const err = await res.json();
+              throw new Error(err.error || 'Erro ao agendar.');
+            }
+
+            const completed = await res.json();
+
+            // WhatsApp link encoding
+            const dateParts = this.selectedDate.split('-');
+            const dateObj = new Date(parseInt(dateParts[0]), parseInt(dateParts[1]) - 1, parseInt(dateParts[2]));
+            const formattedDate = dateObj.toLocaleDateString('pt-BR', {
+              day: '2-digit',
+              month: 'long',
+              year: 'numeric'
+            });
+            const servicesString = this.selectedServices.map(s => s.name).join(', ');
+            
+            const whatsappText = `Olá NeyBlack! Gostaria de confirmar meu agendamento:
+👤 *Cliente:* ${this.clientName}
+✂️ *Serviço(s):* ${servicesString}
+💈 *Barbeiro:* ${this.activeBarber?.name || 'Qualquer Barbeiro'}
+📅 *Data:* ${formattedDate}
+⏰ *Horário:* ${this.selectedTime}
+💰 *Valor Estimado:* R$ ${this.totalCost.toFixed(2).replace('.', ',')}
+💬 *Notas/Pedidos:* ${this.clientNotes || 'Nenhum'}
+
+Fico no aguardo da finalização! Obrigado!`;
+
+            const encoded = encodeURIComponent(whatsappText);
+            const url = `https://wa.me/5513991552417?text=${encoded}`;
+
+            window.open(url, '_blank');
+
+            this.isBookingOpen = false;
+            this.showNotification = true;
+            setTimeout(() => { this.showNotification = false; }, 5500);
+
+            // Reload bookings
+            const listRes = await fetch('/api/appointments');
+            if (listRes.ok) {
+              this.existingBookings = await listRes.json();
+            }
+          } catch (e) {
+            this.submitError = e.message || 'Erro ao registrar no salão.';
+          } finally {
+            this.isSubmitting = false;
+          }
+        },
+
+        copyAddress() {
+          navigator.clipboard.writeText('R. Lourival Moreira do Amaral, 592 - Parque São Vicente, São Vicente - SP');
+          alert('Endereço copiado!');
+        },
+
+        scrollToSection(id) {
+          this.isNavOpen = false;
+          const el = document.getElementById(id);
+          if (el) {
+            el.scrollIntoView({ behavior: 'smooth' });
+          }
+        }
+      }));
+    });
+  </script>
+</body>
+</html>

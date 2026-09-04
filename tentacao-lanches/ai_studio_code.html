@@ -1,0 +1,1734 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tentação na Chapa - Cardápio Online</title>
+  
+  <!-- Font Integration -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Lucide Icons Library -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Tailwind Configuration -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Space Grotesk', 'sans-serif'],
+          },
+          screens: {
+            'xs': '400px',
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Extra custom scrollbars and minor animations -->
+  <style>
+    /* Custom hidden scrollbar utility */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    
+    /* Smooth transitions */
+    .modal-transition {
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+    }
+    
+    /* Custom input/scrollbar accents */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #020617;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #334155;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-amber-500 selection:text-slate-950 font-sans leading-normal tracking-normal">
+
+  <!-- ================= MASTER HEADER / HERO ================= -->
+  <header class="relative w-full h-[400px] md:h-[460px] flex items-center justify-center overflow-hidden shrink-0 border-b border-slate-900">
+    <!-- Blurred Grill Background image -->
+    <div class="absolute inset-0 bg-cover bg-center brightness-[0.3] contrast-[1.05] scale-105"
+         style="background-image: url('https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&q=80&w=1200');">
+    </div>
+    <!-- Dark Gradients overlay -->
+    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-black/60"></div>
+
+    <!-- Floating actions: Share Button -->
+    <div class="absolute top-4 right-4 z-20">
+      <button onclick="handleShare()" class="p-2.5 rounded-full bg-slate-900/80 hover:bg-slate-800 text-slate-200 transition-all border border-slate-700/40 hover:text-white backdrop-blur-md cursor-pointer" title="Compartilhar cardápio">
+        <i data-lucide="share-2" class="w-4.5 h-4.5"></i>
+      </button>
+    </div>
+
+    <!-- Center details container -->
+    <div class="relative text-center px-4 w-full max-w-3xl flex flex-col items-center mt-6 z-10">
+      
+      <!-- Instagram Gradient Ring Emblem Logo -->
+      <div class="relative flex items-center justify-center shrink-0 h-24 w-24 md:h-28 md:w-28 mb-4">
+        <!-- Orange/Pink/Purple Gradient Glow mimicking Instagram ring -->
+        <div class="absolute inset-0 bg-amber-500/10 rounded-full blur-xl animate-pulse"></div>
+        <div class="w-full h-full rounded-full bg-gradient-to-tr from-yellow-500 via-pink-600 to-purple-600 p-1 shadow-lg shadow-black/40">
+          <div class="w-full h-full rounded-full bg-slate-950 p-[3px] flex items-center justify-center">
+            <div class="w-full h-full rounded-full bg-gradient-to-b from-amber-950 to-slate-950 border border-amber-500/30 flex flex-col items-center justify-center overflow-hidden relative">
+              <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(251,191,36,0.15),transparent_60%)]"></div>
+              
+              <!-- Emblem Contents (Burgers vector look) -->
+              <div class="flex flex-col items-center justify-center text-center z-10">
+                <span class="text-[6px] md:text-[7px] text-amber-400 font-bold mb-0.5 tracking-widest opacity-80">★ ★ ★</span>
+                <svg class="w-8 h-8 md:w-11 md:h-11 text-amber-500 fill-current drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]" viewBox="0 0 24 24" aria-label="Logo Tentação na Chapa">
+                  <path d="M2,12 C2,7.5 6.5,5 12,5 C17.5,5 22,7.5 21,12" />
+                  <ellipse cx="7" cy="8.5" rx="0.5" ry="0.6" style="fill:#fef3c7;" />
+                  <ellipse cx="10" cy="7.5" rx="0.5" ry="0.6" style="fill:#fef3c7;" />
+                  <ellipse cx="14" cy="7.5" rx="0.5" ry="0.6" style="fill:#fef3c7;" />
+                  <ellipse cx="17" cy="9" rx="0.5" ry="0.6" style="fill:#fef3c7;" />
+                  <path d="M1.5,12 C3,12.5 4.5,11.5 6,12 C7.5,12.5 9,11.5 10.5,12 C12,12.5 13.5,11.5 15,12 C16.5,12.5 18,11.5 19.5,12 C21,12.5 22,12 22.5,11.5" stroke="#10b981" stroke-width="1" fill="none" stroke-linecap="round" />
+                  <path d="M3,13.5 L21,13.5" stroke="#ef4444" stroke-width="1.5" />
+                  <path d="M2.5,14 L11,16.5 L20.5,14" fill="#fbbf24" stroke="#fbbf24" stroke-width="0.5" />
+                  <rect x="2" y="15" width="20" height="2" rx="1" style="fill:#292524;" />
+                  <path d="M3,18 C3,20.5 7,21 12,21 C17,21 21,20.5 21,18" />
+                </svg>
+                <div class="mt-0.5 flex flex-col items-center">
+                  <span class="text-[8px] md:text-[10px] font-display font-black leading-tight text-white uppercase tracking-wider drop-shadow">TENTAÇÃO</span>
+                  <span class="text-[6px] md:text-[7.5px] font-sans font-extrabold leading-[1] text-amber-400 uppercase bg-amber-950/80 px-1 border border-amber-500/20 rounded-sm mt-[1px]">NA CHAPA</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Restaurant text summary -->
+      <div>
+        <h1 class="text-3xl md:text-5xl font-display font-black text-transparent bg-clip-text bg-gradient-to-b from-white via-slate-100 to-slate-300 tracking-tight leading-tight uppercase drop-shadow">
+          Tentação na Chapa
+        </h1>
+        <p class="text-xs md:text-sm text-amber-400 font-sans font-bold tracking-widest mt-1 uppercase">
+          🍔 “O melhor da cidade” 🍟
+        </p>
+      </div>
+
+      <!-- Live badge variables -->
+      <div class="mt-5 flex flex-wrap items-center justify-center gap-2 md:gap-3 text-xs font-sans">
+        <!-- Opening validation badge -->
+        <div id="live-store-indicator" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full border bg-emerald-500/10 text-emerald-400 border-emerald-500/30">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span class="font-bold">Aberto AGORA (19h às 02h)</span>
+        </div>
+
+        <div class="px-3 py-1.5 rounded-full bg-slate-900/90 border border-slate-800 text-slate-300">
+          <span class="font-medium">R$ 20–40 por pessoa</span>
+        </div>
+
+        <a href="#reviews-section" class="flex items-center gap-1 px-3 py-1.5 rounded-full bg-amber-500/10 hover:bg-amber-500/15 border border-amber-500/30 text-amber-400 transition-all font-bold">
+          <i data-lucide="star" class="w-3.5 h-3.5 fill-amber-400 text-amber-400"></i>
+          <span>4.8</span>
+          <span class="text-slate-400 font-normal">(20 avaliações)</span>
+        </a>
+      </div>
+
+      <!-- Live Address and WhatsApp details (Interactive) -->
+      <div class="mt-5 sm:mt-6 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-400 w-full max-w-lg">
+        <button onclick="copyAddress()" class="flex items-center justify-center gap-2 p-2.5 rounded-xl bg-slate-900/60 border border-slate-850 hover:bg-slate-800/85 hover:border-slate-800 text-left transition-all backdrop-blur-sm group cursor-pointer">
+          <i data-lucide="map-pin" class="w-4 h-4 text-amber-500 shrink-0 group-hover:scale-110 transition-transform"></i>
+          <span class="truncate text-slate-300 font-sans">Rua Guarani 764, Parque São Vicente - São Vicente, SP</span>
+          <span id="copy-badge" class="text-[9px] bg-slate-800 text-slate-400 font-bold px-1.5 py-0.5 rounded uppercase shrink-0 transition-colors">Copiar</span>
+        </button>
+
+        <a href="https://wa.me/5513996394374" target="_blank" rel="noreferrer" class="flex items-center justify-center gap-2 p-2.5 rounded-xl bg-slate-900/60 border border-slate-850 hover:bg-slate-800/85 hover:border-slate-800 text-left transition-all backdrop-blur-sm group">
+          <i data-lucide="phone" class="w-4 h-4 text-emerald-500 shrink-0 group-hover:scale-110 transition-transform"></i>
+          <span class="text-slate-300 font-sans font-medium">(13) 99639-4374</span>
+          <span class="text-[9px] bg-emerald-950 text-emerald-400 border border-emerald-800/30 font-bold px-1.5 py-0.5 rounded uppercase shrink-0 flex items-center gap-0.5">
+            Chamar <i data-lucide="external-link" class="w-2.5 h-2.5"></i>
+          </span>
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+
+  <!-- ================= STICKY CATEGORIES BAR ================= -->
+  <section class="sticky top-0 z-30 bg-slate-950/90 border-y border-slate-900 backdrop-blur-md py-4 shadow-xl select-none">
+    <div class="w-full max-w-7xl mx-auto px-4">
+      <div class="flex items-center justify-between gap-4">
+        <!-- Responsive category horizontal scroller -->
+        <div id="categories-tabs-container" class="flex gap-2 overflow-x-auto no-scrollbar scroll-smooth pb-0.5 w-full justify-start md:justify-center">
+          <!-- Populated by script -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ================= PRODUCTS GRID CONTAINER ================= -->
+  <main class="flex-1 w-full max-w-7xl mx-auto px-4 py-8">
+    
+    <!-- Title category summary -->
+    <div class="flex flex-col md:flex-row md:items-baseline md:justify-between mb-8 border-b border-slate-900 pb-3">
+      <div class="flex items-center gap-2">
+        <span class="text-xl sm:text-2xl">🔥</span>
+        <h2 id="active-category-title" class="text-xl sm:text-3xl font-display font-black uppercase text-white tracking-tight">
+          Hambúrgueres
+        </h2>
+        <span id="active-category-count" class="text-xs font-mono text-slate-500 mt-1 font-semibold"></span>
+      </div>
+      <p class="text-xs text-slate-500 font-sans mt-1 md:mt-0">
+        * Clique em qualquer lanche para customizar com opcionais e adicionar ao carrinho.
+      </p>
+    </div>
+
+    <!-- Main Grid -->
+    <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+      <!-- Populated dynamically by JS -->
+    </div>
+  </main>
+
+
+  <!-- ================= GOOGLE REVIEWS SECTION ================= -->
+  <section id="reviews-section" class="bg-slate-900/30 border-y border-slate-905 py-12 md:py-16">
+    <div class="w-full max-w-7xl mx-auto px-4">
+      
+      <!-- Headings -->
+      <div class="text-center max-w-2xl mx-auto mb-10">
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-bold font-sans uppercase mb-3">
+          <i data-lucide="star" class="w-3.5 h-3.5 fill-amber-400 text-amber-400"></i>
+          <span>Avaliações do Google Maps</span>
+        </div>
+        <h3 class="text-2xl md:text-3xl font-display font-black text-white uppercase tracking-tight">
+          Nossos Clientes Recomendam ❤️
+        </h3>
+        <p class="text-xs md:text-sm text-slate-400 font-sans mt-2">
+          Leveza, sabor e entrega rápida elogiados por quem realmente ama blend tostado na chapa!
+        </p>
+      </div>
+
+      <!-- Hardcoded customer reviews from google maps prompt text -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="reviews-list">
+        <!-- Card 1 -->
+        <div class="bg-slate-950/60 border border-slate-850 p-6 rounded-2xl flex flex-col justify-between relative group hover:border-slate-800 transition-all">
+          <span class="absolute top-5 right-6 text-lg font-black font-sans text-slate-800 select-none">G</span>
+          <div class="space-y-4">
+            <div class="flex gap-0.5">
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-amber-400 text-amber-450"></i>
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-amber-400 text-amber-450"></i>
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-amber-400 text-amber-450"></i>
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-amber-400 text-amber-450"></i>
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-amber-400 text-amber-450"></i>
+            </div>
+            <blockquote class="text-xs text-slate-300 font-sans italic leading-relaxed">
+              "Lanches maravilhosos, saborosos, bem servidos, bem quentinho, entrega super rápida ! 10/10 parabéns pelo capricho!!! lanche, atendimento incrível e ambiente acolhedor."
+            </blockquote>
+          </div>
+          <div class="flex items-center gap-3 mt-6 pt-4 border-t border-slate-900/60">
+            <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-amber-600 to-amber-950 flex items-center justify-center text-xs font-bold text-white uppercase">LL</div>
+            <div>
+              <h5 class="text-xs font-display font-bold text-white">leidiana leidy</h5>
+              <div class="flex items-center gap-1.5 text-[10px] text-slate-500 font-sans mt-0.5">
+                <span>4 meses atrás</span>
+                <span class="w-1 h-1 rounded-full bg-slate-750"></span>
+                <span class="text-amber-500/75 font-semibold">Cliente Fiel</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="bg-slate-950/60 border border-slate-850 p-6 rounded-2xl flex flex-col justify-between relative group hover:border-slate-800 transition-all">
+          <span class="absolute top-5 right-6 text-lg font-black font-sans text-slate-800 select-none">G</span>
+          <div class="space-y-4">
+            <div class="flex gap-0.5">
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-amber-400 text-amber-450"></i>
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-amber-400 text-amber-450"></i>
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-amber-400 text-amber-450"></i>
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-amber-400 text-amber-450"></i>
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-amber-400 text-amber-450"></i>
+            </div>
+            <blockquote class="text-xs text-slate-300 font-sans italic leading-relaxed">
+              "Muito bom um lugar aconchegante agradável ótimo para reunir os amigos ❤️😍😍😍 Recomendo irem conhecer o ambiente excelente na cidade e hambúrgueres incríveis."
+            </blockquote>
+          </div>
+          <div class="flex items-center gap-3 mt-6 pt-4 border-t border-slate-900/60">
+            <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-rose-600 to-purple-950 flex items-center justify-center text-xs font-bold text-white uppercase">JO</div>
+            <div>
+              <h5 class="text-xs font-display font-bold text-white">Jaque Oliver</h5>
+              <div class="flex items-center gap-1.5 text-[10px] text-slate-500 font-sans mt-0.5">
+                <span>4 meses atrás</span>
+                <span class="w-1 h-1 rounded-full bg-slate-750"></span>
+                <span class="text-amber-500/75 font-semibold">Guia Local</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="bg-slate-950/60 border border-slate-850 p-6 rounded-2xl flex flex-col justify-between relative group hover:border-slate-800 transition-all">
+          <span class="absolute top-5 right-6 text-lg font-black font-sans text-slate-800 select-none">G</span>
+          <div class="space-y-4">
+            <div class="flex gap-0.5">
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-amber-400 text-amber-450"></i>
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-amber-400 text-amber-450"></i>
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-amber-400 text-amber-450"></i>
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-amber-400 text-amber-450"></i>
+              <i data-lucide="star" class="w-3.5 h-3.5 fill-amber-400 text-amber-450"></i>
+            </div>
+            <blockquote class="text-xs text-slate-300 font-sans italic leading-relaxed">
+              "Tudo maravilhoso! Lanche, atendimento e ambiente 😍😋👏🏻 Comida excelente de alta qualidade, super quente, entrega rápida e sabor impecável do blend."
+            </blockquote>
+          </div>
+          <div class="flex items-center gap-3 mt-6 pt-4 border-t border-slate-900/60">
+            <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-emerald-600 to-slate-950 flex items-center justify-center text-xs font-bold text-white uppercase">GO</div>
+            <div>
+              <h5 class="text-xs font-display font-bold text-white">Gabi oliveira</h5>
+              <div class="flex items-center gap-1.5 text-[10px] text-slate-500 font-sans mt-0.5">
+                <span>4 meses atrás</span>
+                <span class="w-1 h-1 rounded-full bg-slate-750"></span>
+                <span class="text-amber-500/75 font-semibold">Comensal VIP</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Instagram Callout Banner -->
+      <div id="instagram-connector-banner" class="mt-12 bg-gradient-to-r from-purple-950/20 via-pink-950/10 to-amber-950/10 border border-purple-500/20 p-6 rounded-2xl max-w-2xl mx-auto flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left justify-between">
+        <div class="space-y-1">
+          <h4 class="font-display font-bold text-sm text-slate-200 flex items-center justify-center sm:justify-start gap-2">
+            <i data-lucide="instagram" class="w-4 h-4 text-pink-500"></i> Siga no Instagram!
+          </h4>
+          <p class="text-xs text-slate-400 font-sans leading-relaxed">
+            Acompanhe o dia a dia da chapa, fotos reais dos lanches e promoções em <span class="font-semibold text-pink-500 font-mono">@tentacao_na_chaapa</span>
+          </p>
+        </div>
+        
+        <a href="https://www.instagram.com/tentacao_na_chaapa/" target="_blank" rel="noreferrer" class="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-display font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-md shrink-0 flex items-center gap-1.5 active:scale-95">
+          <span>@tentacao_na_chaapa</span>
+          <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ================= OPERATION HOUR & CONTACT MAP ================= -->
+  <section class="py-12 md:py-16 w-full max-w-7xl mx-auto px-4">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
+      
+      <!-- Operations info card panel -->
+      <div class="bg-slate-900/40 border border-slate-850 p-6 sm:p-8 rounded-2xl flex flex-col justify-between space-y-6">
+        <div>
+          <h3 class="text-xl sm:text-2xl font-display font-black text-white uppercase tracking-tight">
+            Vem retirar ou pede entrega! 🛵
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-400 font-sans mt-2 inline-block">
+            Nossa chapa esquenta todos os dias das 19h às 02h para servir os melhores hambúrgueres artesanais de São Vicente com rapidez máxima.
+          </p>
+        </div>
+
+        <div class="space-y-4 font-sans text-xs sm:text-sm text-slate-300">
+          
+          <!-- Physical Address item -->
+          <div class="flex items-start gap-3 p-3.5 bg-slate-950/40 border border-slate-850 rounded-xl">
+            <i data-lucide="map-pin" class="w-5 h-5 text-amber-500 shrink-0 mt-0.5"></i>
+            <div class="space-y-1">
+              <span class="font-display font-bold text-slate-200">Endereço Físico:</span>
+              <p class="text-slate-400 font-medium leading-relaxed">R. Guarany, 764 - Parque Sao Vicente, São Vicente - SP, 11360-000</p>
+              <button onclick="copyDetailedAddress()" class="text-[11px] text-amber-500 hover:text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1 mt-1 cursor-pointer">
+                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                <span id="copy-detailed-text">Copiar endereço completo</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Operating schedules -->
+          <div class="flex items-start gap-3 p-3.5 bg-slate-950/40 border border-slate-850 rounded-xl">
+            <i data-lucide="clock" class="w-5 h-5 text-emerald-500 shrink-0 mt-0.5"></i>
+            <div class="space-y-1">
+              <span class="font-display font-bold text-slate-200">Horário de Funcionamento:</span>
+              <p class="text-slate-400 font-medium">Todos os dias. Das 19h às 02h</p>
+              <p class="text-[11px] text-slate-500 italic mt-0.5">Disponível para retirar no local e delivery por WhatsApp.</p>
+            </div>
+          </div>
+
+          <!-- Telephone details -->
+          <div class="flex items-start gap-3 p-3.5 bg-slate-950/40 border border-slate-850 rounded-xl">
+            <i data-lucide="message-square" class="w-5 h-5 text-emerald-500 shrink-0 mt-0.5"></i>
+            <div class="space-y-1">
+              <span class="font-display font-bold text-slate-200">Dúvidas ou Pedidos Especiais:</span>
+              <p class="text-slate-400 font-medium leading-relaxed">Fale no WhatsApp pelo número <span class="font-bold text-emerald-400">(13) 99639-4374</span></p>
+              <a href="https://wa.me/5513996394374" target="_blank" rel="noreferrer" class="inline-flex items-center gap-1 text-[11px] text-emerald-400 hover:text-emerald-300 font-bold uppercase tracking-wider mt-1.5 cursor-pointer">
+                <span>Conversar Agora</span>
+                <i data-lucide="external-link" class="w-3 h-3"></i>
+              </a>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Quick navigational links -->
+        <div class="grid grid-cols-2 gap-3 pt-2">
+          <a href="https://maps.google.com/?q=Rua+Guarany+764,+Parque+Sao+Vicente,+Sao+Vicente+-+SP" target="_blank" rel="noreferrer" class="py-3 px-4 rounded-xl bg-slate-950 border border-slate-800 hover:bg-slate-900 text-center font-display font-black text-xs uppercase tracking-wider text-amber-500 flex items-center justify-center gap-1.5 transition-colors">
+            <span>Ver no Google Maps</span>
+            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+          </a>
+          <a href="tel:5513996394374" class="py-3 px-4 rounded-xl bg-slate-950 border border-slate-800 hover:bg-slate-900 text-center font-display font-black text-xs uppercase tracking-wider text-slate-300 flex items-center justify-center gap-1.5 transition-colors">
+            <span>Ligar Agora</span>
+            <i data-lucide="phone" class="w-3.5 h-3.5"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Live responsive Google Maps embed iframe -->
+      <div class="relative h-96 lg:h-auto rounded-2xl overflow-hidden bg-slate-900 border border-slate-850 shadow-inner flex flex-col group">
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3644.2087523091!2d-46.39801332465551!3d-23.988350178512196!2m3!1f0!2f0!3f0!2m3!1i1024!2i768!4f13.1!3m3!1m2!1s0x94ce1beff50d51ef%3A0xe541da8093848b8a!2sR.%20Guarany%2C%20764%20-%20Parque%20Sao%20Vicente%2C%20S%C3%A3o%20Vicente%20-%20SP%2C%2011360-000!5e0!3m2!1spt-BR!2sbr!4v1718475000000!5m2!1spt-BR!2sbr"
+          width="100%"
+          height="100%"
+          style="border: 0;"
+          allowfullscreen=""
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          class="absolute inset-0 w-full h-full opacity-80 group-hover:opacity-95 transition-opacity"
+          title="Endereço Tentação na Chapa no Google Maps"
+        ></iframe>
+        <!-- Overlay maps info -->
+        <div class="absolute bottom-4 left-4 right-4 bg-slate-950/95 border border-slate-800 p-3 rounded-xl flex items-center justify-between backdrop-blur-md z-10 shadow-2xl">
+          <div class="min-w-0 pr-2">
+            <p class="text-[10px] uppercase font-bold text-slate-500 tracking-wide">Como Chegar</p>
+            <p class="text-xs font-semibold text-white truncate">Rua Guarani 764, São Vicente - SP</p>
+          </div>
+          <a href="https://maps.google.com/?q=Rua+Guarany+764,+Parque+Sao+Vicente,+Sao+Vicente+-+SP" target="_blank" rel="noreferrer" class="py-1.5 px-3 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-display font-black text-[10px] uppercase tracking-wider shrink-0 transition-all">
+            Rotas Google Maps
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ================= FOOTER CREDIT ================= -->
+  <footer class="bg-slate-950 border-t border-slate-900 py-8 text-center mt-auto">
+    <div class="w-full max-w-7xl mx-auto px-4 space-y-4">
+      <p class="text-xs text-slate-600 leading-relaxed">
+        © 2026 Tentação na Chapa. Todos os direitos reservados.<br>
+        Preços e lanches válidos para retirada e entrega via cardápio online com montagem e envio pelo WhatsApp.
+      </p>
+      <div class="flex justify-center items-center gap-1.5 text-slate-700 text-xs">
+        <span>Desenvolvido com carinho para os amantes de lanches na chapa. 🍔</span>
+      </div>
+    </div>
+  </footer>
+
+
+  <!-- ================= FLOATING CART BAR (PERSISTENT ON ITEMS) ================= -->
+  <div id="floating-cart-panel" class="fixed bottom-5 inset-x-4 z-40 max-w-lg mx-auto sm:right-6 sm:left-auto hidden">
+    <button onclick="toggleCartDrawer(true)" class="w-full h-14 bg-amber-500 hover:bg-amber-400 text-slate-950 font-display font-black text-sm uppercase tracking-wider rounded-2xl transition-all shadow-2xl flex items-center justify-between px-5 group cursor-pointer shadow-amber-500/10 active:scale-[0.98]">
+      <div class="flex items-center gap-2.5">
+        <div class="relative">
+          <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+          <!-- Total Count Badge -->
+          <span id="floating-cart-count" class="absolute -top-1.5 -right-2 text-[9px] bg-slate-950 text-amber-500 font-mono font-extrabold w-4.5 h-4.5 rounded-full flex items-center justify-center border border-amber-500 shadow-sm">
+            0
+          </span>
+        </div>
+        <span class="font-extrabold tracking-wide font-sans">Ver meu Carrinho</span>
+      </div>
+      
+      <div class="flex items-center gap-2">
+        <span id="floating-cart-price" class="text-xs bg-slate-950/10 px-2 py-1 rounded-lg text-slate-950 font-bold">R$ 0,00</span>
+        <span class="text-xs opacity-50 bg-slate-950 w-1.5 h-1.5 rounded-full"></span>
+        <span class="font-bold text-xs font-black">Avançar</span>
+      </div>
+    </button>
+  </div>
+
+
+  <!-- ================= SHOPPING CART DRAWER (SLIDING OVERLAY) ================= -->
+  <div id="cart-drawer-overlay" class="fixed inset-0 z-50 flex justify-end hidden opacity-0 transition-opacity duration-300 bg-black/80 backdrop-blur-sm">
+    
+    <!-- Drawer Container Pane -->
+    <div id="cart-drawer-panel" class="relative w-full max-w-md bg-slate-900 border-l border-slate-800 h-full flex flex-col shadow-2xl text-slate-100 modal-transition translate-x-full">
+      
+      <!-- Drawer Header -->
+      <div class="p-4 border-b border-slate-800 bg-slate-950 flex items-center justify-between shrink-0">
+        <div class="flex items-center gap-2">
+          <!-- Back button inside Checkout step -->
+          <button id="back-to-cart-btn" onclick="goToStep('cart')" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 transition-colors cursor-pointer hidden">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i>
+          </button>
+          
+          <i id="header-cart-icon" data-lucide="shopping-bag" class="w-5 h-5 text-amber-500"></i>
+          <h3 id="drawer-title" class="font-display font-black text-lg text-white">Seu Carrinho</h3>
+          <span id="drawer-items-count" class="text-xs bg-slate-800 text-amber-400 font-mono font-bold px-2 py-0.5 rounded-full">0 lanches</span>
+        </div>
+        <button onclick="toggleCartDrawer(false)" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white transition-colors cursor-pointer">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Middle Body Content -->
+      <div class="flex-1 overflow-y-auto p-4 space-y-4">
+        
+        <!-- --- STEP 1: CARROSSEL DE ITENS --- -->
+        <div id="cart-step-items" class="space-y-4">
+          <div class="flex justify-between items-center bg-slate-950/20 px-2 py-1 rounded-lg">
+            <span class="text-xs text-slate-500">Revisar lanches adicionados</span>
+            <button onclick="clearFullCart()" class="text-[11px] text-red-400 hover:text-red-300 font-display font-medium flex items-center gap-1 cursor-pointer">
+              <i data-lucide="trash-2" class="w-3 h-3"></i> Limpar tudo
+            </button>
+          </div>
+
+          <!-- Items inner wrapper panel populated by JS -->
+          <div id="cart-items-list" class="space-y-3"></div>
+        </div>
+
+        <!-- --- STEP 2: CADASTRO DE DADOS E PAGAMENTO (CHECKOUT) --- -->
+        <div id="cart-step-checkout" class="space-y-4 hidden">
+          <!-- Location details selector toggler -->
+          <div class="bg-slate-950/40 p-4 rounded-xl border border-slate-800/60 space-y-3">
+            <span class="text-xs font-display font-bold text-slate-300 uppercase tracking-wider block">Forma de Retirada / Entrega</span>
+            <div class="grid grid-cols-2 gap-2">
+              <button type="button" onclick="setDeliveryMethod('delivery')" id="method-delivery-btn" class="py-2.5 px-3 rounded-lg border text-xs font-medium flex items-center justify-center gap-2 transition-all bg-amber-500 text-slate-950 border-amber-500 font-bold">
+                <i data-lucide="map-pin" class="w-3.5 h-3.5 shrink-0"></i>
+                <span>Receber em Casa</span>
+              </button>
+              <button type="button" onclick="setDeliveryMethod('pickup')" id="method-pickup-btn" class="py-2.5 px-3 rounded-lg border text-xs font-medium flex items-center justify-center gap-2 transition-all bg-slate-900 text-slate-400 border-slate-800 hover:text-slate-200">
+                <i data-lucide="store" class="w-3.5 h-3.5 shrink-0"></i>
+                <span>Retirar no Local</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Personal info inputs -->
+          <div class="p-4 bg-slate-950/20 border border-slate-850 rounded-xl space-y-3">
+            <span class="text-xs font-display font-bold text-slate-300 uppercase tracking-wider block">Seus Dados</span>
+            
+            <div class="space-y-1.5">
+              <label for="customer-name" class="text-[11px] text-slate-400 font-bold block">Seu Nome *</label>
+              <input id="customer-name" type="text" placeholder="Como podemos te chamar?" class="w-full bg-slate-950 border border-slate-850 rounded-lg p-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-amber-500 transition-colors">
+              <p id="error-name" class="text-[10px] text-red-500 hidden font-semibold">O nome é obrigatório para o pedido</p>
+            </div>
+
+            <div class="space-y-1.5">
+              <label for="customer-phone" class="text-[11px] text-slate-400 font-bold block">Telefone / WhatsApp *</label>
+              <input id="customer-phone" type="tel" placeholder="Ex: (13) 99639-4374" class="w-full bg-slate-950 border border-slate-850 rounded-lg p-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-amber-500 transition-colors">
+              <p id="error-phone" class="text-[10px] text-red-500 hidden font-semibold">O número do WhatsApp é obrigatório</p>
+            </div>
+          </div>
+
+          <!-- Conditional address info (Delivery) -->
+          <div id="checkout-address-panel" class="p-4 bg-slate-950/20 border border-slate-850 rounded-xl space-y-3">
+            <span class="text-xs font-display font-bold text-slate-300 uppercase tracking-wider block">Endereço de Entrega (São Vicente - SP)</span>
+            
+            <div class="space-y-1.5">
+              <label for="customer-address" class="text-[11px] text-slate-400 font-bold block">Rua, Número e Complemento *</label>
+              <input id="customer-address" type="text" placeholder="Ex: Rua Guarany, 764" class="w-full bg-slate-950 border border-slate-850 rounded-lg p-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-amber-500 transition-colors">
+              <p id="error-address" class="text-[10px] text-red-500 hidden font-semibold">O endereço completo é necessário para a entrega</p>
+            </div>
+
+            <div class="space-y-1.5">
+              <label for="customer-neighborhood" class="text-[11px] text-slate-400 font-bold block">Bairro *</label>
+              <input id="customer-neighborhood" type="text" placeholder="Ex: Parque São Vicente" class="w-full bg-slate-950 border border-slate-850 rounded-lg p-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-amber-500 transition-colors">
+              <p id="error-neighborhood" class="text-[10px] text-red-500 hidden font-semibold">O nome do bairro é obrigatório</p>
+            </div>
+            
+            <p class="text-[10px] text-slate-500 leading-relaxed font-semibold italic">** Entregamos em toda a região de São Vicente por uma taxa fixa de R$ 5,00.</p>
+          </div>
+
+          <!-- Pickup prompt notices -->
+          <div id="checkout-pickup-notice" class="p-4 bg-slate-950/30 border border-amber-500/20 rounded-xl space-y-2 hidden">
+            <span class="text-xs font-display font-bold text-amber-400 uppercase tracking-wider block">Você irá retirar em:</span>
+            <p class="text-xs text-slate-200 leading-relaxed font-medium hover:text-amber-300">
+              📍 Rua Guarany, 764 - Parque São Vicente
+            </p>
+            <p class="text-[10px] text-slate-550">
+              Pronto em até 25-40 min após a confirmação via WhatsApp.
+            </p>
+          </div>
+
+          <!-- Payment methods options selectors -->
+          <div class="p-4 bg-slate-950/20 border border-slate-850 rounded-xl space-y-3">
+            <span class="text-xs font-display font-bold text-slate-300 uppercase tracking-wider block">Forma de Pagamento</span>
+            
+            <div class="grid grid-cols-2 gap-2">
+              <button type="button" onclick="setPaymentMethod('pix')" id="pay-pix-btn" class="flex items-center gap-2 p-2.5 rounded-lg border text-left transition-all bg-amber-500/10 text-white border-amber-500 font-bold cursor-pointer">
+                <span class="w-4 h-4 rounded-full bg-cyan-950 border border-cyan-800 flex items-center justify-center font-display font-black text-[9px] text-cyan-400 shrink-0">PX</span>
+                <span class="text-xs">PIX</span>
+              </button>
+              
+              <button type="button" onclick="setPaymentMethod('money')" id="pay-money-btn" class="flex items-center gap-2 p-2.5 rounded-lg border text-left transition-all bg-slate-900 text-slate-400 border-slate-800 hover:text-slate-250">
+                <i data-lucide="dollar-sign" class="w-4 h-4 text-emerald-550 shrink-0"></i>
+                <span class="text-xs">Dinheiro</span>
+              </button>
+
+              <button type="button" onclick="setPaymentMethod('card_debit')" id="pay-debit-btn" class="flex items-center gap-2 p-2.5 rounded-lg border text-left transition-all bg-slate-900 text-slate-400 border-slate-800 hover:text-slate-250">
+                <i data-lucide="credit-card" class="w-4 h-4 text-amber-550 shrink-0"></i>
+                <span class="text-xs">Débito local</span>
+              </button>
+
+              <button type="button" onclick="setPaymentMethod('card_credit')" id="pay-credit-btn" class="flex items-center gap-2 p-2.5 rounded-lg border text-left transition-all bg-slate-900 text-slate-400 border-slate-800 hover:text-slate-250">
+                <i data-lucide="credit-card" class="w-4 h-4 text-amber-550 shrink-0"></i>
+                <span class="text-xs">Crédito local</span>
+              </button>
+            </div>
+
+            <!-- Money cash change section -->
+            <div id="money-change-wrapper" class="space-y-1.5 pt-2 border-t border-slate-850 hidden">
+              <label for="customer-change" class="text-[10px] text-amber-500 font-bold uppercase tracking-wider block">Precisa de troco? Para quanto? *</label>
+              <input id="customer-change" type="text" placeholder="Ex: Troco para R$ 50,00 ou Não preciso" class="w-full bg-slate-950 border border-slate-850 rounded-lg p-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-amber-500 transition-colors">
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Drawer bottom pricing calculations & CTAs -->
+      <div class="p-4 border-t border-slate-850 bg-slate-950 shrink-0 space-y-3">
+        <div class="space-y-1.5 text-xs text-slate-400">
+          <div class="flex justify-between">
+            <span>Subtotal</span>
+            <span id="drawer-subtotal-price" class="font-mono text-slate-200">R$ 0,00</span>
+          </div>
+          <div id="drawer-delivery-row" class="flex justify-between text-amber-500/85">
+            <span>Taxa de Entrega</span>
+            <span id="drawer-delivery-fee" class="font-mono">R$ 5,00</span>
+          </div>
+          <div class="flex justify-between text-sm text-white font-bold font-display pt-1 border-t border-slate-850/60">
+            <span>Total</span>
+            <span id="drawer-grand-total-price" class="font-mono text-base text-amber-400">R$ 0,00</span>
+          </div>
+        </div>
+
+        <!-- Order checkout triggers -->
+        <button id="cart-primary-action-btn" onclick="proceedToCheckout()" class="w-full h-11 bg-amber-500 hover:bg-amber-400 text-slate-950 font-display font-black text-sm uppercase tracking-wider rounded-xl transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer active:scale-98">
+          <span>Prosseguir para Pagamento</span>
+        </button>
+
+        <button id="alter-cart-items-btn" onclick="goToStep('cart')" class="w-full text-center text-xs text-slate-500 hover:text-slate-350 flex items-center justify-center gap-1.5 transition-colors cursor-pointer hidden">
+          Alterar itens do pedido
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ================= ITEM OPTIONS CONFIGURATION MODAL ================= -->
+  <div id="item-modal-overlay" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 hidden opacity-0 transition-opacity duration-300 bg-black/80 backdrop-blur-sm">
+    
+    <!-- Modal Inside Box -->
+    <div id="item-modal-box" class="relative w-full sm:max-w-xl bg-slate-900 border-t sm:border border-slate-800 rounded-t-2xl sm:rounded-2xl max-h-[92vh] sm:max-h-[85vh] overflow-y-auto no-scrollbar flex flex-col shadow-2xl text-slate-100 modal-transition translate-y-full">
+      
+      <!-- Relative Header Banner img -->
+      <div class="relative h-48 sm:h-56 w-full bg-slate-950 shrink-0">
+        <img id="modal-item-image" src="" alt="" class="w-full h-full object-cover opacity-90">
+        <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/10 to-transparent"></div>
+        
+        <!-- Absolute close -->
+        <button onclick="toggleItemModal(false)" class="absolute top-4 right-4 bg-black/60 hover:bg-black/90 p-2 rounded-full text-slate-200 transition-colors border border-slate-700/50 backdrop-blur-sm cursor-pointer" aria-label="Fecha modal">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+
+        <!-- Product single key tags overlay -->
+        <div id="modal-tags-holder" class="absolute bottom-4 left-4 flex flex-wrap gap-1.5">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <!-- Core Details section -->
+      <div class="p-5 sm:p-6 flex-1 space-y-6">
+        <div>
+          <div class="flex justify-between items-start gap-4">
+            <h3 id="modal-item-name" class="text-xl sm:text-2xl font-display font-black text-white tracking-tight leading-tight"></h3>
+            <span id="modal-item-price-unit" class="text-xl sm:text-2xl font-mono font-bold text-amber-400 shrink-0 whitespace-nowrap">R$ 0,00</span>
+          </div>
+          <p id="modal-item-description" class="mt-2 text-sm text-slate-400 leading-relaxed"></p>
+        </div>
+
+        <!-- Conditional Burger meat point choice -->
+        <div id="choice-meat-point-section" class="bg-slate-950/40 p-4 rounded-xl border border-slate-800/60 space-y-3">
+          <div class="flex items-center gap-2">
+            <i data-lucide="clock" class="w-4 h-4 text-amber-500"></i>
+            <span class="text-sm font-display font-bold text-slate-200">Escolha o ponto da carne:</span>
+            <span class="text-xs bg-amber-500/10 text-amber-400 px-1.5 py-0.5 rounded border border-amber-500/20 ml-auto font-semibold uppercase">Obrigatório</span>
+          </div>
+          
+          <div class="grid grid-cols-3 gap-2 select-none">
+            <button onclick="setMeatPoint('Malpassado')" id="point-mal-btn" class="py-2 px-1 text-xs font-medium rounded-lg border text-center transition-all bg-slate-900 text-slate-400 border-slate-850 hover:bg-slate-800 hover:text-slate-100">
+              Malpassado
+            </button>
+            <button onclick="setMeatPoint('Ao Ponto')" id="point-ponto-btn" class="py-2 px-1 text-xs font-medium rounded-lg border text-center transition-all bg-amber-500 text-slate-950 border-amber-500 font-bold">
+              Ao Ponto
+            </button>
+            <button onclick="setMeatPoint('Bem Passado')" id="point-bem-btn" class="py-2 px-1 text-xs font-medium rounded-lg border text-center transition-all bg-slate-900 text-slate-400 border-slate-850 hover:bg-slate-800 hover:text-slate-100">
+              Bem Passado
+            </button>
+          </div>
+        </div>
+
+        <!-- Extra customization Options Addons -->
+        <div class="space-y-3">
+          <div class="flex items-center gap-2">
+            <i data-lucide="sparkles" class="w-4 h-4 text-amber-500 animate-pulse"></i>
+            <span class="text-sm font-display font-bold text-slate-200">Adicionar acompanhamentos extras:</span>
+            <span class="text-xs text-slate-500 ml-auto">Opcional</span>
+          </div>
+
+          <!-- Addons dynamic loop list container -->
+          <div id="modal-addons-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-2 select-none">
+            <!-- Populated via script -->
+          </div>
+        </div>
+
+        <!-- Observations notes feedback textarea -->
+        <div class="space-y-2">
+          <label for="modal-notes" class="text-xs font-display font-bold text-slate-300 block uppercase tracking-wider">
+            Observações Especiais
+          </label>
+          <textarea id="modal-notes" rows="2" placeholder="Ex: Tirar salada, cebola ou bacon do lanche, ponto da carne rústico..." class="w-full bg-slate-950/50 border border-slate-800 rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-amber-500 transition-colors resize-none placeholder-slate-600"></textarea>
+        </div>
+
+      </div>
+
+      <!-- Sticky Counter and Add cart button footer -->
+      <div class="p-4 sm:p-5 border-t border-slate-850 bg-slate-950/60 backdrop-blur-md sticky bottom-0 flex flex-col sm:flex-row items-center gap-4 mt-auto shrink-0 z-10">
+        <!-- Quantity control -->
+        <div class="flex items-center h-11 bg-slate-900 border border-slate-850 rounded-xl p-1.5 select-none w-full sm:w-auto justify-between sm:justify-start">
+          <span class="text-xs text-slate-400 px-2 font-display font-bold">Qtd:</span>
+          <button onclick="updateModalQuantity(-1)" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center justify-center transition-colors active:scale-95 cursor-pointer">
+            <i data-lucide="minus" class="w-4 h-4"></i>
+          </button>
+          <span id="modal-item-qty" class="w-10 text-center font-mono font-bold text-base text-white">1</span>
+          <button onclick="updateModalQuantity(1)" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center justify-center transition-colors active:scale-95 cursor-pointer">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- Trigger action CTA -->
+        <button onclick="addItemToCartFromModal()" class="w-full h-11 bg-amber-500 hover:bg-amber-400 text-slate-950 font-display font-black text-sm uppercase tracking-wider rounded-xl transition-all shadow-lg active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer">
+          <span>Adicionar ao Carrinho</span>
+          <span class="w-1.5 h-1.5 rounded-full bg-slate-950 opacity-40 inline-block"></span>
+          <span id="modal-grand-total">R$ 0,00</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ================= NOTIFICATION TOAST POPUP ================= -->
+  <div id="notification-toast" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-emerald-500 text-slate-950 font-display font-black text-xs uppercase tracking-wider py-3 px-6 rounded-xl shadow-2xl transition-all duration-300 flex items-center gap-2 transform translate-y-[-100px] opacity-0 select-none pointer-events-none">
+    <i data-lucide="check-circle" class="w-4.5 h-4.5"></i>
+    <span id="notification-message">Endereço copiado!</span>
+  </div>
+
+
+  <!-- ================= INLINE SCRIPT LOGIC ================= -->
+  <script>
+    // --- BUSINESS DATA ---
+    const BUSINESS_INFO = {
+      name: "Tentação na Chapa",
+      phoneRaw: "5513996394374",
+      deliveryFee: 5.00,
+      instagram: "https://www.instagram.com/tentacao_na_chaapa/",
+      gmapsLink: "https://maps.google.com/?q=Rua+Guarany+764,+Parque+Sao+Vicente,+Sao+Vicente+-+SP",
+      address: "R. Guarany, 764 - Parque Sao Vicente, São Vicente - SP, 11360-000",
+    };
+
+    const CATEGORIES = [
+      { id: 'burgers', label: 'Hambúrgueres', icon: '🍔' },
+      { id: 'combos', label: 'Combos & Promos', icon: '🏷️' },
+      { id: 'sides', label: 'Acompanhamentos', icon: '🍟' },
+      { id: 'drinks', label: 'Bebidas', icon: '🥤' },
+      { id: 'desserts', label: 'Sobremesas', icon: '🍦' },
+    ];
+
+    const ADDONS = [
+      { id: 'add_bacon', name: 'Bacon extra', price: 4.50 },
+      { id: 'add_cheddar', name: 'Cheddar extra', price: 4.00 },
+      { id: 'add_blend', name: 'Hambúrguer de 150g extra', price: 9.00 },
+      { id: 'add_egg', name: 'Ovo na chapa', price: 2.50 },
+      { id: 'add_onion', name: 'Cebola caramelizada', price: 3.00 },
+      { id: 'add_cheese', name: 'Queijo prato extra', price: 3.50 },
+    ];
+
+    const MENU_ITEMS = [
+      {
+        id: 'tentacao-classico',
+        name: 'Tentação Clássico 🍔',
+        description: 'Pão de brioche macio, blend artesanal de 150g assado na chapa com perfeição, queijo prato derretido, alface crespa selecionada, tomate fresco fatiado e a famosa maionese secreta do chef.',
+        price: 24.90,
+        image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&q=80&w=600',
+        category: 'burgers',
+        tags: ['Artesanal', 'Clássico'],
+        isPopular: true
+      },
+      {
+        id: 'cheddar-bacon-temptation',
+        name: 'Cheddar & Bacon Supreme 🥓',
+        description: 'Pão de brioche tostado na manteiga, blend artesanal de 150g, avalanche de cheddar cremoso escorrendo pelo lanche e generosas fatias de bacon premium super crocantes.',
+        price: 29.90,
+        image: 'https://images.unsplash.com/photo-1553979459-d2229ba7433b?auto=format&fit=crop&q=80&w=600',
+        category: 'burgers',
+        tags: ['Mais Vendido', 'Cheddar'],
+        isPopular: true
+      },
+      {
+        id: 'double-monster',
+        name: 'Duplo Tentação Monster 👹',
+        description: 'Para quem tem fome de leão! Pão de brioche, 2 blends artesanais de 150g na chapa (total 300g), porção dupla de queijo prato e cheddar derretidos, muito bacon crocante, cebola caramelizada e molho barbecue rústico.',
+        price: 38.90,
+        image: 'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?auto=format&fit=crop&q=80&w=600',
+        category: 'burgers',
+        tags: ['Super Lanche', 'Monstruoso']
+      },
+      {
+        id: 'smash-burger',
+        name: 'Smash Tentação Simples ⚡',
+        description: 'Hambúrguer de 90g smash esmagado diretamente na chapa com aquela crostinha caramelizada dos deuses, queijo cheddar americano fatiado e maionese suave da casa no pão brioche.',
+        price: 19.90,
+        image: 'https://images.unsplash.com/photo-1521305916504-4a1121188589?auto=format&fit=crop&q=80&w=600',
+        category: 'burgers',
+        tags: ['Econômico', 'Smash']
+      },
+      {
+        id: 'crispy-chicken',
+        name: 'Chicken Supreme Crocante 🍗',
+        description: 'Pão brioche, suculento filé de peito de frango de 140g empanado em panko japonês super crocante, queijo prato, rúcula fresca baby e maionese verde artesanal de ervas finas.',
+        price: 25.90,
+        image: 'https://images.unsplash.com/photo-1625813506062-0aeb1d7a094b?auto=format&fit=crop&q=80&w=600',
+        category: 'burgers',
+        tags: ['Frango', 'Crocante']
+      },
+      {
+        id: 'veg-burger',
+        name: 'Tentação Veggie 🌱',
+        description: 'Hambúrguer artesanal de grão-de-bico e temperos frescos, queijo prato derretido (opcional sem queijo), alface, tomate, picles fatiados da casa e maionese rústica no pão australiano.',
+        price: 26.90,
+        image: 'https://images.unsplash.com/photo-1525059696034-4967a8e1dca2?auto=format&fit=crop&q=80&w=600',
+        category: 'burgers',
+        tags: ['Vegetariano', 'Leve']
+      },
+      {
+        id: 'combo-individual',
+        name: 'Combo Individual Tentação 🥤',
+        description: '1 Tentação Clássico 🍔 + 1 Porção de Batata Frita Individual Crocante 🍟 + 1 Coca-Cola Geladinha (Lata 350ml). A escolha ideal para matar a fome com custo-benefício incrível.',
+        price: 39.90,
+        image: 'https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?auto=format&fit=crop&q=80&w=600',
+        category: 'combos',
+        tags: ['Promoção', 'Mais Pedido'],
+        isPopular: true
+      },
+      {
+        id: 'combo-casal',
+        name: 'Combo Casal Tentação Dupla 👥',
+        description: '2x Smash Tentação Lanches ⚡ + 1 Porção de Batata Frita Grande para dividir 🍟 + 2x Refrigerantes Lata 350ml à sua escolha. O encontro perfeito começa com este combo.',
+        price: 54.90,
+        image: 'https://images.unsplash.com/photo-1551782450-a2132b4ba21d?auto=format&fit=crop&q=80&w=600',
+        category: 'combos',
+        tags: ['Econômico', 'Para Compartilhar']
+      },
+      {
+        id: 'frita-simples',
+        name: 'Batata Frita Tradicional 🍟',
+        description: 'Batatas palito selecionadas, fritas sob medida para ficarem douradas por fora e extremamente macias por dentro. Salpicadas com sal e alecrim fresco.',
+        price: 14.90,
+        image: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?auto=format&fit=crop&q=80&w=600',
+        category: 'sides',
+        tags: ['Clássico']
+      },
+      {
+        id: 'frita-turbinada',
+        name: 'Batata Rústica Cheddar & Bacon 🧀',
+        description: 'Nossa clássica batata frita rústica com casquinha crocante, coberta generosamente com muito molho cheddar cremoso derretido e salpicada com bacon picadinho crocante.',
+        price: 22.90,
+        image: 'https://images.unsplash.com/photo-1585109649139-366815a0d713?auto=format&fit=crop&q=80&w=600',
+        category: 'sides',
+        tags: ['Turbinada', 'Com Queijo'],
+        isPopular: true
+      },
+      {
+        id: 'onion-rings',
+        name: 'Anéis de Cebola Crocantes 🧅',
+        description: 'Deliciosos anéis de cebola gigantes empanados em farinha rústica temperada, fritos até a perfeição dourada. Acompanha molho barbecue rústico.',
+        price: 16.90,
+        image: 'https://images.unsplash.com/photo-1639024471283-2bc7b3c6a267?auto=format&fit=crop&q=80&w=600',
+        category: 'sides',
+        tags: ['Petisco']
+      },
+      {
+        id: 'coca-lata',
+        name: 'Coca-Cola em Lata 350ml 🥤',
+        description: 'Refrigerante Coca-Cola original geladíssimo, perfeito para acompanhar qualquer lanche da chapa.',
+        price: 6.00,
+        image: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&q=80&w=600',
+        category: 'drinks'
+      },
+      {
+        id: 'guarana-lata',
+        name: 'Guaraná Antarctica 350ml 🥤',
+        description: 'Refrigerante sabor guaraná em lata, deliciosamente refrescante e geladíssimo.',
+        price: 6.00,
+        image: 'https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?auto=format&fit=crop&q=80&w=600',
+        category: 'drinks'
+      },
+      {
+        id: 'suco-laranja',
+        name: 'Suco Natural de Laranja 500ml 🍊',
+        description: 'Suco de laranja natural, espremido na hora com laranjas frescas selecionadas e gelo, sem conservantes.',
+        price: 9.00,
+        image: 'https://images.unsplash.com/photo-1613478223719-2ab802602423?auto=format&fit=crop&q=80&w=600',
+        category: 'drinks',
+        tags: ['Sem Açúcar', 'Natural']
+      },
+      {
+        id: 'agua-mineral',
+        name: 'Água Mineral 500ml 💧',
+        description: 'Garrafa de água mineral pura e leve. Disponível nas versões com gás ou sem gás.',
+        price: 4.50,
+        image: 'https://images.unsplash.com/photo-1608885898957-a599fb16ec18?auto=format&fit=crop&q=80&w=600',
+        category: 'drinks'
+      },
+      {
+        id: 'brownie-chef',
+        name: 'Brownie do Chef com Calda 🍫',
+        description: 'Delicioso pedaço de brownie de chocolate meio amargo, recheado com pedacinhos de nozes e coberto com calda quente de chocolate belga.',
+        price: 12.00,
+        image: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&q=80&w=600',
+        category: 'desserts',
+        tags: ['Favorito']
+      },
+      {
+        id: 'milkshake-nutella',
+        name: 'Milkshake Premium Nutella 400ml 🥛',
+        description: 'Bebida cremosa feita com sorvete de baunilha premium batido com leite integral, muito creme de chocolate e avelã Nutella original e chantilly por cima.',
+        price: 16.90,
+        image: 'https://images.unsplash.com/photo-1579954115545-a95591f28bfc?auto=format&fit=crop&q=80&w=600',
+        category: 'desserts',
+        tags: ['Premium', 'Cremoso']
+      }
+    ];
+
+    // --- APPLICATION STATE ---
+    let activeCategory = 'burgers';
+    let cart = [];
+    let activeStep = 'cart'; // 'cart' | 'checkout'
+    
+    // Modal states
+    let currentSelectedProduct = null;
+    let modalQuantity = 1;
+    let modalSelectedAddons = []; // Store IDs
+    let modalMeatCookingPoint = 'Ao Ponto';
+    
+    // Checkout states
+    let deliveryMethod = 'delivery'; // 'delivery' | 'pickup'
+    let paymentMethod = 'pix'; // 'pix' | 'money' | 'card_debit' | 'card_credit'
+
+    // --- INITIALIZATION ---
+    window.addEventListener('DOMContentLoaded', () => {
+      // Setup Lucide initial icons
+      lucide.createIcons();
+      
+      // Setup live date evaluation
+      evaluateLiveHours();
+      
+      // Render Category Toggles
+      renderCategoryTabBar();
+      
+      // Render Active Category Products
+      renderProductGrid();
+    });
+
+    // --- LIVE OPEN HOURS VERIFIER ---
+    function evaluateLiveHours() {
+      const liveElem = document.getElementById('live-store-indicator');
+      try {
+        const now = new Date();
+        const formatter = new Intl.DateTimeFormat('pt-BR', {
+          timeZone: 'America/Sao_Paulo',
+          hour: 'numeric',
+          hour12: false,
+        });
+        const currentHour = parseInt(formatter.format(now), 10);
+        
+        // Open daily from 19:00 (7 PM) till 02:00 AM (next day)
+        if (currentHour >= 19 || currentHour < 2) {
+          liveElem.className = "flex items-center gap-1.5 px-3 py-1.5 rounded-full border bg-emerald-500/10 text-emerald-400 border-emerald-500/30";
+          liveElem.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span><span class="font-bold">Aberto AGORA (19h às 02h)</span>`;
+        } else {
+          liveElem.className = "flex items-center gap-1.5 px-3 py-1.5 rounded-full border bg-red-500/10 text-red-400 border-red-500/30";
+          liveElem.innerHTML = `<span class="w-2 h-2 rounded-full bg-red-500"></span><span class="font-bold">Fechado no momento (Abre 19:00)</span>`;
+        }
+      } catch (e) {
+        // Fallback
+      }
+    }
+
+    // --- CLIPBOARD ACTIONS ---
+    function showNotification(text) {
+      const toast = document.getElementById('notification-toast');
+      document.getElementById('notification-message').textContent = text;
+      
+      toast.classList.remove('opacity-0', 'translate-y-[-100px]');
+      toast.classList.add('opacity-1', 'translate-y-0');
+      
+      setTimeout(() => {
+        toast.classList.remove('opacity-1', 'translate-y-0');
+        toast.classList.add('opacity-0', 'translate-y-[-100px]');
+      }, 2500);
+    }
+
+    function copyAddress() {
+      navigator.clipboard.writeText(BUSINESS_INFO.address);
+      const btnBadge = document.getElementById('copy-badge');
+      btnBadge.textContent = "Copiado!";
+      btnBadge.className = "text-[9px] bg-amber-500 text-slate-950 font-bold px-1.5 py-0.5 rounded uppercase shrink-0 transition-colors";
+      showNotification("Endereço copiado com sucesso!");
+      
+      setTimeout(() => {
+        btnBadge.textContent = "Copiar";
+        btnBadge.className = "text-[9px] bg-slate-800 text-slate-400 font-bold px-1.5 py-0.5 rounded uppercase shrink-0 transition-colors";
+      }, 2500);
+    }
+
+    function copyDetailedAddress() {
+      navigator.clipboard.writeText(BUSINESS_INFO.address);
+      const copierText = document.getElementById('copy-detailed-text');
+      copierText.textContent = "Copiado para área de transferência!";
+      showNotification("Endereço copiado!");
+      setTimeout(() => {
+        copierText.textContent = "Copiar endereço completo";
+      }, 2500);
+    }
+
+    function handleShare() {
+      if (navigator.share) {
+        navigator.share({
+          title: "Tentação na Chapa",
+          text: 'Confira o cardápio interativo do Tentação na Chapa e faça seu pedido direto pelo WhatsApp!',
+          url: window.location.href,
+        }).catch(() => {
+          navigator.clipboard.writeText(window.location.href);
+          showNotification("Link do cardápio copiado!");
+        });
+      } else {
+        navigator.clipboard.writeText(window.location.href);
+        showNotification("Link do cardápio copiado!");
+      }
+    }
+
+    // --- RENDER CATEGORY BAR ---
+    function renderCategoryTabBar() {
+      const container = document.getElementById('categories-tabs-container');
+      
+      let html = `
+        <button onclick="changeCategory('all')" class="py-2.5 px-4 rounded-xl font-display font-bold text-xs uppercase tracking-wider whitespace-nowrap shrink-0 transition-all border cursor-pointer ${
+          activeCategory === 'all'
+            ? 'bg-amber-500 text-slate-950 border-amber-500 shadow-md shadow-amber-500/10'
+            : 'bg-slate-900 text-slate-400 border-slate-850 hover:bg-slate-850 hover:text-white'
+        }">
+          🍽️ Ver Tudo
+        </button>
+      `;
+
+      CATEGORIES.forEach(cat => {
+        const isActive = activeCategory === cat.id;
+        html += `
+          <button onclick="changeCategory('${cat.id}')" class="py-2.5 px-4 rounded-xl font-display font-bold text-xs uppercase tracking-wider whitespace-nowrap shrink-0 transition-all border flex items-center gap-1.5 cursor-pointer ${
+            isActive
+              ? 'bg-amber-500 text-slate-950 border-amber-500 shadow-md shadow-amber-500/10'
+              : 'bg-slate-900 text-slate-400 border-slate-850 hover:bg-slate-850 hover:text-white'
+          }">
+            <span class="text-sm">${cat.icon}</span>
+            <span>${cat.label}</span>
+          </button>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    function changeCategory(id) {
+      activeCategory = id;
+      renderCategoryTabBar();
+      renderProductGrid();
+
+      document.getElementById('active-category-title').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    // --- RENDER PRODUCTS GRID ---
+    function renderProductGrid() {
+      const grid = document.getElementById('products-grid');
+      const titleElem = document.getElementById('active-category-title');
+      const countElem = document.getElementById('active-category-count');
+
+      if (activeCategory === 'all') {
+        titleElem.textContent = 'Cardápio Completo';
+      } else {
+        const match = CATEGORIES.find(c => c.id === activeCategory);
+        titleElem.textContent = match ? match.label : '';
+      }
+
+      const filtered = activeCategory === 'all' 
+        ? MENU_ITEMS 
+        : MENU_ITEMS.filter(item => item.category === activeCategory);
+
+      countElem.textContent = `(${filtered.length} lanches)`;
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `<div class="col-span-full py-16 text-center text-slate-500">Nenhum lanche encontrado nessa categoria.</div>`;
+        return;
+      }
+
+      let gridHtml = '';
+      filtered.forEach(item => {
+        const tagsHtml = item.tags && item.tags.length > 0
+          ? item.tags.map(tag => `<span class="text-[9px] font-sans font-bold bg-slate-900/95 border border-slate-800 text-slate-300 px-2 py-0.5 rounded-full uppercase tracking-wider backdrop-blur-md">${tag}</span>`).join('')
+          : '';
+
+        const popularBadge = item.isPopular
+          ? `<span class="flex items-center gap-1 text-[10px] font-sans font-extrabold bg-gradient-to-r from-red-500 to-amber-500 text-white px-2 py-0.5 rounded-full uppercase tracking-wider shadow shadow-black/50">
+               <i data-lucide="flame" class="w-3 h-3 fill-white text-white"></i>
+               <span>Destaque</span>
+             </span>`
+          : '';
+
+        gridHtml += `
+          <div onclick="openItemModal('${item.id}')" class="bg-slate-900 border border-slate-850 hover:border-amber-500/20 rounded-2xl overflow-hidden cursor-pointer flex flex-col group select-none shadow-lg shadow-black/20 hover:scale-[1.01] transition-all duration-300">
+            <!-- Product image panel -->
+            <div class="relative h-44 xs:h-48 sm:h-52 w-full overflow-hidden bg-slate-950 shrink-0">
+              <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105">
+              <div class="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-slate-900 via-slate-900/10 to-transparent"></div>
+              
+              <!-- Badges overlays -->
+              <div class="absolute top-3 left-3 flex flex-col gap-1.5">
+                ${popularBadge}
+                ${tagsHtml}
+              </div>
+            </div>
+
+            <!-- Product info details wrapper -->
+            <div class="p-4 sm:p-5 flex-1 flex flex-col justify-between">
+              <div class="space-y-1.5">
+                <h4 class="text-base sm:text-lg font-display font-black text-white group-hover:text-amber-400 transition-colors tracking-tight line-clamp-1 leading-tight">
+                  ${item.name}
+                </h4>
+                <p class="text-xs text-slate-400 leading-relaxed line-clamp-2">
+                  ${item.description}
+                </p>
+              </div>
+
+              <!-- Purchase row -->
+              <div class="flex items-center justify-between mt-4 pt-3.5 border-t border-slate-900">
+                <div class="flex flex-col">
+                  <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">A partir de</span>
+                  <span class="text-base sm:text-lg font-mono font-black text-amber-400">
+                    R$ ${item.price.toFixed(2)}
+                  </span>
+                </div>
+
+                <button class="w-9 h-9 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 flex items-center justify-center transition-all shadow-md group-hover:shadow-amber-500/20 group-hover:scale-105 active:scale-95 cursor-pointer">
+                  <i data-lucide="plus" class="w-5 h-5 stroke-[3.5]"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      grid.innerHTML = gridHtml;
+      lucide.createIcons();
+    }
+
+
+    // --- OPTION SELECTIONS MODAL CONTROLS ---
+    function openItemModal(productId) {
+      const item = MENU_ITEMS.find(m => m.id === productId);
+      if (!item) return;
+
+      currentSelectedProduct = item;
+      modalQuantity = 1;
+      modalSelectedAddons = [];
+      modalMeatCookingPoint = 'Ao Ponto';
+      document.getElementById('modal-notes').value = '';
+
+      // Populate Image & Texts
+      document.getElementById('modal-item-image').src = item.image;
+      document.getElementById('modal-item-image').alt = item.name;
+      document.getElementById('modal-item-name').textContent = item.name;
+      document.getElementById('modal-item-price-unit').textContent = `R$ ${item.price.toFixed(2)}`;
+      document.getElementById('modal-item-description').textContent = item.description;
+
+      // Populate tags
+      const tagsHolder = document.getElementById('modal-tags-holder');
+      tagsHolder.innerHTML = '';
+      if (item.tags && item.tags.length > 0) {
+        item.tags.forEach(tag => {
+          tagsHolder.innerHTML += `<span class="text-[10px] font-sans font-bold bg-amber-500 text-slate-950 px-2 py-0.5 rounded-full uppercase tracking-wider">${tag}</span>`;
+        });
+      }
+
+      // Meat Point choice visibility
+      const meatSec = document.getElementById('choice-meat-point-section');
+      if (item.category === 'burgers') {
+        meatSec.classList.remove('hidden');
+        updateMeatPointUI();
+      } else {
+        meatSec.classList.add('hidden');
+      }
+
+      // Render Addons
+      renderModalAddons();
+
+      // Update totals
+      updateModalTotal();
+
+      // Show overlay with animations
+      toggleItemModal(true);
+    }
+
+    function toggleItemModal(isOpen) {
+      const overlay = document.getElementById('item-modal-overlay');
+      const box = document.getElementById('item-modal-box');
+
+      if (isOpen) {
+        overlay.classList.remove('hidden');
+        setTimeout(() => {
+          overlay.classList.remove('opacity-0');
+          box.classList.remove('translate-y-full', 'opacity-0');
+          box.classList.add('translate-y-0', 'opacity-1');
+        }, 10);
+      } else {
+        overlay.classList.add('opacity-0');
+        box.classList.add('translate-y-full');
+        setTimeout(() => {
+          overlay.classList.add('hidden');
+        }, 300);
+      }
+    }
+
+    function updateModalQuantity(diff) {
+      modalQuantity = Math.max(1, modalQuantity + diff);
+      document.getElementById('modal-item-qty').textContent = modalQuantity;
+      updateModalTotal();
+    }
+
+    function setMeatPoint(point) {
+      modalMeatCookingPoint = point;
+      updateMeatPointUI();
+    }
+
+    function updateMeatPointUI() {
+      const malBtn = document.getElementById('point-mal-btn');
+      const pontoBtn = document.getElementById('point-ponto-btn');
+      const bemBtn = document.getElementById('point-bem-btn');
+
+      [malBtn, pontoBtn, bemBtn].forEach(btn => {
+        btn.className = "py-2 px-1 text-xs font-sans font-medium rounded-lg border text-center transition-all bg-slate-900 text-slate-400 border-slate-850 hover:bg-slate-800 hover:text-slate-100 cursor-pointer";
+      });
+
+      if (modalMeatCookingPoint === 'Malpassado') {
+        malBtn.className = "py-2 px-1 text-xs font-sans rounded-lg border text-center transition-all bg-amber-500 text-slate-950 border-amber-500 font-bold cursor-pointer";
+      } else if (modalMeatCookingPoint === 'Ao Ponto') {
+        pontoBtn.className = "py-2 px-1 text-xs font-sans rounded-lg border text-center transition-all bg-amber-500 text-slate-950 border-amber-500 font-bold cursor-pointer";
+      } else if (modalMeatCookingPoint === 'Bem Passado') {
+        bemBtn.className = "py-2 px-1 text-xs font-sans rounded-lg border text-center transition-all bg-amber-500 text-slate-950 border-amber-500 font-bold cursor-pointer";
+      }
+    }
+
+    function renderModalAddons() {
+      const grid = document.getElementById('modal-addons-grid');
+      let html = '';
+
+      ADDONS.forEach(addon => {
+        const isSelected = modalSelectedAddons.includes(addon.id);
+        const checkBg = isSelected ? 'bg-amber-500 border-amber-500 text-slate-950' : 'border-slate-700';
+        const buttonBorder = isSelected ? 'bg-amber-500/10 text-white border-amber-500/60' : 'bg-slate-950/20 text-slate-400 border-slate-800/60 hover:border-slate-700 hover:text-slate-200';
+        
+        html += `
+          <button onclick="toggleAddonSelection('${addon.id}')" type="button" class="flex items-center justify-between p-3 rounded-xl border text-left transition-all cursor-pointer ${buttonBorder}">
+            <div class="flex items-center gap-2.5">
+              <div class="w-4 h-4 rounded flex items-center justify-center border transition-all ${checkBg}">
+                ${isSelected ? '<i data-lucide="check" class="w-3 h-3 stroke-[3.5]"></i>' : ''}
+              </div>
+              <span class="text-xs font-medium">${addon.name}</span>
+            </div>
+            <span class="text-xs font-mono text-amber-400 font-bold ml-2">
+              +R$ ${addon.price.toFixed(2)}
+            </span>
+          </button>
+        `;
+      });
+
+      grid.innerHTML = html;
+      lucide.createIcons();
+    }
+
+    function toggleAddonSelection(addonId) {
+      if (modalSelectedAddons.includes(addonId)) {
+        modalSelectedAddons = modalSelectedAddons.filter(id => id !== addonId);
+      } else {
+        modalSelectedAddons.push(addonId);
+      }
+      renderModalAddons();
+      updateModalTotal();
+    }
+
+    // Modal total sum calculator
+    function updateModalTotal() {
+      if (!currentSelectedProduct) return;
+      
+      const addonPricesSum = ADDONS
+        .filter(addon => modalSelectedAddons.includes(addon.id))
+        .reduce((sum, item) => sum + item.price, 0);
+
+      const singleUnitCost = currentSelectedProduct.price + addonPricesSum;
+      const totalAmountCost = singleUnitCost * modalQuantity;
+
+      document.getElementById('modal-grand-total').textContent = `R$ ${totalAmountCost.toFixed(2)}`;
+    }
+
+    function addItemToCartFromModal() {
+      if (!currentSelectedProduct) return;
+
+      const matchedAddonObjList = ADDONS.filter(addon => modalSelectedAddons.includes(addon.id));
+      const textObs = document.getElementById('modal-notes').value.trim();
+
+      const newCartItemRecord = {
+        product: currentSelectedProduct,
+        quantity: modalQuantity,
+        cookingPoint: currentSelectedProduct.category === 'burgers' ? modalMeatCookingPoint : null,
+        addons: matchedAddonObjList,
+        notes: textObs || null
+      };
+
+      cart.push(newCartItemRecord);
+
+      toggleItemModal(false);
+      showNotification(`"${currentSelectedProduct.name}" Adicionado ao seu caneco de pedidos!`);
+      
+      updateCartDataStructures();
+      
+      setTimeout(() => {
+        toggleCartDrawer(true);
+      }, 400);
+    }
+
+
+    // --- CART DRAWER STATE & RENDERS ---
+    function toggleCartDrawer(isOpen) {
+      const overlay = document.getElementById('cart-drawer-overlay');
+      const panel = document.getElementById('cart-drawer-panel');
+
+      if (isOpen) {
+        overlay.classList.remove('hidden');
+        setTimeout(() => {
+          overlay.classList.remove('opacity-0');
+          panel.classList.remove('translate-x-full');
+          panel.classList.add('translate-x-0');
+        }, 10);
+        updateCartDataStructures();
+      } else {
+        overlay.classList.add('opacity-0');
+        panel.classList.add('translate-x-full');
+        panel.classList.remove('translate-x-0');
+        setTimeout(() => {
+          overlay.classList.add('hidden');
+        }, 300);
+      }
+    }
+
+    function goToStep(step) {
+      activeStep = step;
+      
+      const stepItems = document.getElementById('cart-step-items');
+      const stepCheckout = document.getElementById('cart-step-checkout');
+      const backBtn = document.getElementById('back-to-cart-btn');
+      const cartIcon = document.getElementById('header-cart-icon');
+      const drawerTitle = document.getElementById('drawer-title');
+      const ctaAction = document.getElementById('cart-primary-action-btn');
+      const alterBtn = document.getElementById('alter-cart-items-btn');
+
+      if (step === 'cart') {
+        stepItems.classList.remove('hidden');
+        stepCheckout.classList.add('hidden');
+        backBtn.classList.add('hidden');
+        cartIcon.classList.remove('hidden');
+        drawerTitle.textContent = 'Seu Carrinho';
+        ctaAction.innerHTML = "<span>Prosseguir para Pagamento</span>";
+        ctaAction.setAttribute("onclick", "proceedToCheckout()");
+        alterBtn.classList.add('hidden');
+      } else {
+        stepItems.classList.add('hidden');
+        stepCheckout.classList.remove('hidden');
+        backBtn.classList.remove('hidden');
+        cartIcon.classList.add('hidden');
+        drawerTitle.textContent = 'Finalizar Pedido';
+        ctaAction.innerHTML = `<i data-lucide="send" class="w-4 h-4 stroke-[3]"></i> <span>Enviar Pedido via WhatsApp</span>`;
+        ctaAction.setAttribute("onclick", "executeDeliverWhatsApp()");
+        alterBtn.classList.remove('hidden');
+      }
+      
+      updateCartDataStructures();
+      lucide.createIcons();
+    }
+
+    function calculateCartTotalSum(withDeliveryFee = false) {
+      let subtotal = 0;
+      cart.forEach(item => {
+        const addonsCost = item.addons.reduce((sum, add) => sum + add.price, 0);
+        subtotal += (item.product.price + addonsCost) * item.quantity;
+      });
+
+      let grandTotal = subtotal;
+      if (withDeliveryFee && deliveryMethod === 'delivery' && cart.length > 0) {
+        grandTotal += BUSINESS_INFO.deliveryFee;
+      }
+
+      return {
+        subtotal,
+        grandTotal
+      };
+    }
+
+    function updateCartDataStructures() {
+      const totalQuantitiesSum = cart.reduce((sum, item) => sum + item.quantity, 0);
+      const { subtotal, grandTotal } = calculateCartTotalSum(true);
+
+      document.getElementById('drawer-items-count').textContent = `${totalQuantitiesSum} lanches`;
+      document.getElementById('floating-cart-count').textContent = totalQuantitiesSum;
+      document.getElementById('floating-cart-price').textContent = `R$ ${subtotal.toFixed(2)}`;
+
+      const floatingBar = document.getElementById('floating-cart-panel');
+      if (cart.length > 0) {
+        floatingBar.classList.remove('hidden');
+      } else {
+        floatingBar.classList.add('hidden');
+        toggleCartDrawer(false);
+      }
+
+      document.getElementById('drawer-subtotal-price').textContent = `R$ ${subtotal.toFixed(2)}`;
+      document.getElementById('drawer-grand-total-price').textContent = `R$ ${grandTotal.toFixed(2)}`;
+
+      const deliveryRow = document.getElementById('drawer-delivery-row');
+      if (deliveryMethod === 'delivery' && activeStep === 'checkout') {
+        deliveryRow.classList.remove('hidden');
+      } else {
+        deliveryRow.classList.add('hidden');
+      }
+
+      renderCheckoutStep1Items();
+    }
+
+    function renderCheckoutStep1Items() {
+      const holder = document.getElementById('cart-items-list');
+      
+      if (cart.length === 0) {
+        holder.innerHTML = `
+          <div class="h-full py-16 flex flex-col items-center justify-center text-center p-6 space-y-4">
+            <div class="w-16 h-16 rounded-full bg-slate-950/50 flex items-center justify-center border border-slate-850">
+              <i data-lucide="shopping-bag" class="w-8 h-8 text-slate-705"></i>
+            </div>
+            <div>
+              <p class="font-display font-bold text-slate-300">Carrinho vazio</p>
+              <p class="text-xs text-slate-500 mt-1 max-w-xs">
+                Selecione as tentações do nosso cardápio na chapa para começar o seu pedido!
+              </p>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      let html = '';
+      cart.forEach((item, index) => {
+        const addonsTotalPrice = item.addons.reduce((sum, a) => sum + a.price, 0);
+        const itemReceiptCost = (item.product.price + addonsTotalPrice) * item.quantity;
+        
+        let subDetailsMarkup = '';
+        if (item.cookingPoint) {
+          subDetailsMarkup += `<p class="text-slate-400">Ponto: <span class="font-medium text-amber-500/80">${item.cookingPoint}</span></p>`;
+        }
+        if (item.addons.length > 0) {
+          subDetailsMarkup += `<p class="text-slate-400 line-clamp-1">Extras: ${item.addons.map(a => a.name).join(', ')}</p>`;
+        }
+        if (item.notes) {
+          subDetailsMarkup += `<p class="text-slate-500 italic line-clamp-1">"${item.notes}"</p>`;
+        }
+
+        html += `
+          <div class="bg-slate-950/35 border border-slate-850/60 p-3 rounded-xl flex items-start gap-3 relative hover:border-slate-800 transition-colors">
+            <img src="${item.product.image}" alt="${item.product.name}" class="w-14 h-14 rounded-lg object-cover bg-slate-950 border border-slate-800 shrink-0">
+            <div class="flex-1 min-w-0">
+              <h4 class="font-display font-semibold text-xs text-white truncate pr-5">
+                ${item.product.name}
+              </h4>
+              <div class="text-[10px] text-slate-500 mt-0.5 space-y-0.5">
+                ${subDetailsMarkup}
+              </div>
+
+              <!-- Counter and pricing -->
+              <div class="flex items-center justify-between mt-2.5">
+                <div class="flex items-center bg-slate-900 border border-slate-800 p-0.5 rounded-lg">
+                  <button onclick="updateCartItemQuantity(${index}, -1)" class="w-5 h-5 rounded hover:bg-slate-800 text-slate-300 flex items-center justify-center transition-colors cursor-pointer">
+                    <i data-lucide="minus" class="w-3 h-3"></i>
+                  </button>
+                  <span class="w-6 text-center font-mono text-xs font-semibold text-white">
+                    ${item.quantity}
+                  </span>
+                  <button onclick="updateCartItemQuantity(${index}, 1)" class="w-5 h-5 rounded hover:bg-slate-800 text-slate-300 flex items-center justify-center transition-colors cursor-pointer">
+                    <i data-lucide="plus" class="w-3 h-3"></i>
+                  </button>
+                </div>
+                
+                <span class="font-mono text-xs font-bold text-amber-400">
+                  R$ ${itemReceiptCost.toFixed(2)}
+                </span>
+              </div>
+            </div>
+
+            <!-- Single remove button -->
+            <button onclick="deleteCartItem(${index})" class="absolute top-2.5 right-2 px-1 py-1 text-slate-650 hover:text-red-400 rounded hover:bg-red-500/10 transition-colors cursor-pointer" title="Remover item">
+              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+        `;
+      });
+
+      holder.innerHTML = html;
+      lucide.createIcons();
+    }
+
+    function updateCartItemQuantity(index, diff) {
+      if (!cart[index]) return;
+      const targetQty = cart[index].quantity + diff;
+      
+      if (targetQty <= 0) {
+        deleteCartItem(index);
+      } else {
+        cart[index].quantity = targetQty;
+        updateCartDataStructures();
+      }
+    }
+
+    function deleteCartItem(index) {
+      if (!cart[index]) return;
+      const pName = cart[index].product.name;
+      cart.splice(index, 1);
+      showNotification(`"${pName}" removido do caneco de pedidos.`);
+      updateCartDataStructures();
+    }
+
+    function clearFullCart() {
+      cart = [];
+      showNotification("Sua lista de pedidos foi esvaziada.");
+      updateCartDataStructures();
+    }
+
+    // --- STEP 2: CHECKOUT OPTIONS CONTROLS ---
+    function setDeliveryMethod(method) {
+      deliveryMethod = method;
+      
+      const devBtn = document.getElementById('method-delivery-btn');
+      const pickBtn = document.getElementById('method-pickup-btn');
+      const addressSection = document.getElementById('checkout-address-panel');
+      const pickupNoticeSection = document.getElementById('checkout-pickup-notice');
+
+      if (method === 'delivery') {
+        devBtn.className = "py-2.5 px-3 rounded-lg border text-xs font-medium flex items-center justify-center gap-2 transition-all bg-amber-500 text-slate-950 border-amber-500 font-bold cursor-pointer";
+        pickBtn.className = "py-2.5 px-3 rounded-lg border text-xs font-medium flex items-center justify-center gap-2 transition-all bg-slate-900 text-slate-400 border-slate-800 hover:text-slate-200 cursor-pointer";
+        addressSection.classList.remove('hidden');
+        pickupNoticeSection.classList.add('hidden');
+      } else {
+        devBtn.className = "py-2.5 px-3 rounded-lg border text-xs font-medium flex items-center justify-center gap-2 transition-all bg-slate-900 text-slate-400 border-slate-800 hover:text-slate-200 cursor-pointer";
+        pickBtn.className = "py-2.5 px-3 rounded-lg border text-xs font-medium flex items-center justify-center gap-2 transition-all bg-amber-500 text-slate-950 border-amber-500 font-bold cursor-pointer";
+        addressSection.classList.add('hidden');
+        pickupNoticeSection.classList.remove('hidden');
+      }
+
+      updateCartDataStructures();
+    }
+
+    function setPaymentMethod(method) {
+      paymentMethod = method;
+      
+      const pixBtn = document.getElementById('pay-pix-btn');
+      const moneyBtn = document.getElementById('pay-money-btn');
+      const debitBtn = document.getElementById('pay-debit-btn');
+      const creditBtn = document.getElementById('pay-credit-btn');
+      const changeWrap = document.getElementById('money-change-wrapper');
+
+      [pixBtn, moneyBtn, debitBtn, creditBtn].forEach(b => {
+        b.className = "flex items-center gap-2 p-2.5 rounded-lg border text-left transition-all bg-slate-900 text-slate-400 border-slate-800 hover:text-slate-250 cursor-pointer";
+      });
+
+      if (method === 'pix') {
+        pixBtn.className = "flex items-center gap-2 p-2.5 rounded-lg border text-left transition-all bg-amber-500/10 text-white border-amber-500 font-bold cursor-pointer";
+        changeWrap.classList.add('hidden');
+      } else if (method === 'money') {
+        moneyBtn.className = "flex items-center gap-2 p-2.5 rounded-lg border text-left transition-all bg-amber-500/10 text-white border-amber-500 font-bold cursor-pointer";
+        changeWrap.classList.remove('hidden');
+      } else if (method === 'card_debit') {
+        debitBtn.className = "flex items-center gap-2 p-2.5 rounded-lg border text-left transition-all bg-amber-500/10 text-white border-amber-500 font-bold cursor-pointer";
+        changeWrap.classList.add('hidden');
+      } else if (method === 'card_credit') {
+        creditBtn.className = "flex items-center gap-2 p-2.5 rounded-lg border text-left transition-all bg-amber-500/10 text-white border-amber-500 font-bold cursor-pointer";
+        changeWrap.classList.add('hidden');
+      }
+    }
+
+    function proceedToCheckout() {
+      if (cart.length === 0) {
+        showNotification("Adicione lanches antes de finalizar!");
+        return;
+      }
+      goToStep('checkout');
+    }
+
+    function validateCheckoutInputs() {
+      let isValid = true;
+      
+      const inputName = document.getElementById('customer-name').value.trim();
+      const inputPhone = document.getElementById('customer-phone').value.trim();
+      const inputAddress = document.getElementById('customer-address').value.trim();
+      const inputNeighborhood = document.getElementById('customer-neighborhood').value.trim();
+
+      const errName = document.getElementById('error-name');
+      const errPhone = document.getElementById('error-phone');
+      const errAddress = document.getElementById('error-address');
+      const errNeighborhood = document.getElementById('error-neighborhood');
+
+      [errName, errPhone, errAddress, errNeighborhood].forEach(el => el.classList.add('hidden'));
+
+      if (!inputName) {
+        errName.classList.remove('hidden');
+        isValid = false;
+      }
+      if (!inputPhone) {
+        errPhone.classList.remove('hidden');
+        isValid = false;
+      }
+
+      if (deliveryMethod === 'delivery') {
+        if (!inputAddress) {
+          errAddress.classList.remove('hidden');
+          isValid = false;
+        }
+        if (!inputNeighborhood) {
+          errNeighborhood.classList.remove('hidden');
+          isValid = false;
+        }
+      }
+
+      return isValid;
+    }
+
+    function executeDeliverWhatsApp() {
+      if (!validateCheckoutInputs()) {
+        showNotification("Por favor, preencha as informações obrigatórias!");
+        return;
+      }
+
+      const inputName = document.getElementById('customer-name').value.trim();
+      const inputPhone = document.getElementById('customer-phone').value.trim();
+      const inputAddress = document.getElementById('customer-address').value.trim();
+      const inputNeighborhood = document.getElementById('customer-neighborhood').value.trim();
+      const inputChange = document.getElementById('customer-change').value.trim();
+
+      const { subtotal, grandTotal } = calculateCartTotalSum(true);
+
+      let message = `*🍔 NOVO PEDIDO - TENTAÇÃO NA CHAPA 🍟*\n`;
+      message += `==================================\n\n`;
+      message += `👤 *Cliente:* ${inputName}\n`;
+      message += `📞 *Telefone:* ${inputPhone}\n`;
+      message += `🛵 *Forma:* ${deliveryMethod === 'delivery' ? 'Entrega em Domicílio' : 'Retirada na Hamburgueria'}\n\n`;
+
+      message += `🛒 *ITENS DO PEDIDO:*\n`;
+      cart.forEach((item, index) => {
+        const addonsTotalPrice = item.addons.reduce((sum, a) => sum + a.price, 0);
+        const itemReceiptCost = (item.product.price + addonsTotalPrice) * item.quantity;
+        
+        message += `*${index + 1}. ${item.quantity}x ${item.product.name}*\n`;
+        message += `   _Preço un: R$ ${item.product.price.toFixed(2)}_\n`;
+        if (item.cookingPoint) {
+          message += `   • Ponto da carne: ${item.cookingPoint}\n`;
+        }
+        if (item.addons.length > 0) {
+          const names = item.addons.map(a => a.name).join(', ');
+          message += `   • Adicionais: ${names}\n`;
+        }
+        if (item.notes) {
+          message += `   • Obs: "${item.notes}"\n`;
+        }
+        message += `   _Subtotal: R$ ${itemReceiptCost.toFixed(2)}_\n\n`;
+      });
+
+      message += `==================================\n`;
+      if (deliveryMethod === 'delivery') {
+        message += `📍 *ENDEREÇO DE ENTREGA:*\n`;
+        message += `   *Rua/Nº:* ${inputAddress}\n`;
+        message += `   *Bairro:* ${inputNeighborhood}\n`;
+        message += `   *Cidade:* São Vicente - SP\n\n`;
+      } else {
+        message += `🏢 *RETIRADA EM:* R. Guarany, 764 - Parque Sao Vicente, São Vicente - SP\n\n`;
+      }
+
+      const payRawValueNames = {
+        pix: 'PIX (Envio instantâneo)',
+        money: 'Dinheiro',
+        card_debit: 'Cartão de Débito (Máquina)',
+        card_credit: 'Cartão de Crédito (Máquina)'
+      };
+
+      message += `💳 *PAGAMENTO:* ${payRawValueNames[paymentMethod]}\n`;
+      if (paymentMethod === 'money' && inputChange) {
+        message += `   • Troco para: R$ ${inputChange}\n`;
+      }
+      message += `\n`;
+
+      message += `💵 *Subtotal:* R$ ${subtotal.toFixed(2)}\n`;
+      if (deliveryMethod === 'delivery') {
+        message += `🛵 *Taxa de Entrega:* R$ ${BUSINESS_INFO.deliveryFee.toFixed(2)}\n`;
+      }
+      message += `💰 *TOTAL A PAGAR:* *R$ ${grandTotal.toFixed(2)}*\n\n`;
+      message += `==================================\n`;
+      message += `_Pedido montado no Cardápio Online interativo e enviado via WhatsApp._`;
+
+      const targetApiUri = `https://api.whatsapp.com/send?phone=${BUSINESS_INFO.phoneRaw}&text=${encodeURIComponent(message)}`;
+      
+      window.open(targetApiUri, '_blank');
+
+      cart = [];
+      goToStep('cart');
+      toggleCartDrawer(false);
+      showNotification("Pedido enviado! Verifique sua conversa do WhatsApp.");
+    }
+  </script>
+</body>
+</html>
